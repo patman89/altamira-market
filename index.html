@@ -32,7 +32,7 @@
             <div class="flex items-center gap-4">
                 <button id="btn-privacy" class="text-xs font-medium text-gray-400 hover:text-indigo-600">Privacidad</button>
                 <div class="bg-indigo-50 px-4 py-1 rounded-full border border-indigo-100 flex items-center gap-2">
-                    <span class="text-[10px] text-indigo-400 uppercase font-black">Ventas</span>
+                    <span class="text-[10px] text-indigo-400 uppercase font-black">Ventas Totales</span>
                     <span id="stats-count" class="font-bold text-indigo-600 text-lg">0</span>
                 </div>
                 <button id="admin-main-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition">Panel Admin</button>
@@ -41,8 +41,6 @@
     </nav>
 
     <div class="container mx-auto px-4 py-8 flex-grow">
-        <div id="login-container"></div>
-
         <div id="admin-panel" class="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-lg mb-10 hidden border-2 border-indigo-50">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
                 <h2 class="text-xl font-black uppercase text-gray-700 tracking-wide">Centro de Control</h2>
@@ -120,7 +118,6 @@
         let news = [];
         let isAdmin = false;
 
-        // --- REFERENCIAS DOM ---
         const productGrid = document.getElementById('product-grid');
         const newsFeed = document.getElementById('news-feed');
 
@@ -139,7 +136,6 @@
             if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
         });
 
-        // --- RENDERIZADO ---
         function renderProducts() {
             const filter = document.getElementById('filter-category').value;
             const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
@@ -150,7 +146,7 @@
                         <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
                         <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
                         <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
-                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase">Eliminar</button>` : ''}
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Eliminar Producto</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -166,11 +162,32 @@
             `).join('');
         }
 
-        // --- ACCIONES (EXPUESTAS A WINDOW PARA HTML) ---
+        // --- LÓGICA DE ELIMINACIÓN AJUSTADA ---
         window.adminDelete = async (id) => {
-            const r = prompt("1. VENDIDO | 2. OTRO");
-            if(r === "1") await updateDoc(doc(db, "stats", "global"), { salesCount: increment(1) });
-            if(r === "1" || r === "2") await deleteDoc(doc(db, "products", id));
+      const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR (Sin estadística)\n3. CANCELAR");
+            if (r === "1") {
+        try {
+            // Referencia al documento de estadísticas
+            const statsRef = doc(db, "stats", "global");
+
+            // Usamos setDoc con merge:true para que funcione la primera vez (cuando no existe el doc)
+            await setDoc(statsRef, { 
+                salesCount: increment(1) 
+            }, { merge: true });
+
+            // Borrar el producto después de actualizar la estadística
+            await deleteDoc(doc(db, "products", id));
+            
+            alert("¡Venta registrada con éxito!");
+        } catch (e) {
+            console.error("Error completo de Firebase:", e);
+            alert("Error de permisos o conexión. Revisa la consola.");
+        }
+            } else if (r === "2") {
+                if(confirm("¿Estás seguro de eliminar sin contar como venta?")) {
+                    await deleteDoc(doc(db, "products", id));
+                }
+            }
         };
 
         window.deleteNews = async (id) => {
@@ -206,7 +223,6 @@
             e.target.reset();
         });
 
-        // --- UI LOGIC ---
         document.getElementById('admin-main-btn').onclick = () => {
             const u = prompt("Usuario:"), p = prompt("Clave:");
             if(u === "admin" && p === "colombia2024") {
@@ -214,6 +230,8 @@
                 document.getElementById('admin-panel').classList.remove('hidden');
                 document.getElementById('admin-main-btn').classList.add('hidden');
                 renderProducts(); renderNews();
+            } else {
+                alert("Acceso denegado");
             }
         };
 
@@ -224,6 +242,4 @@
 
     </script>
 </body>
-</html>
-
 </html>
