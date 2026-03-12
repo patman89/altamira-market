@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +17,7 @@
         <div class="container mx-auto flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
                 <img src="https://cdn-icons-png.flaticon.com/512/1162/1162499.png" alt="Logo" class="h-10 w-10 object-contain">
-                <h1 class="text-2xl font-black text-indigo-600 tracking-tighter italic uppercase">Altamira Campestre Market</h1>
+                <h1 class="text-2xl font-black text-indigo-600 tracking-tighter italic uppercase">Altamira Market</h1>
             </div>
             
             <select id="filter-category" class="p-2 border rounded-lg text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
@@ -49,7 +50,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <form id="product-form" class="space-y-4">
-                    <h3 class="font-bold text-indigo-600 border-l-4 border-indigo-600 pl-2 uppercase text-sm">Nuevo Producto o Servicio</h3>
+                    <h3 class="font-bold text-indigo-600 border-l-4 border-indigo-600 pl-2 uppercase text-sm">Nuevo Producto</h3>
                     <input type="text" id="title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm outline-none" required>
                     <select id="category" class="w-full p-3 border rounded-xl text-sm outline-none" required>
                         <option value="Tecnología">Tecnología</option>
@@ -62,14 +63,14 @@
                     <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-3 border rounded-xl text-sm" required>
                     <input type="text" id="contact" placeholder="WhatsApp (Ej: 57300...)" class="w-full p-3 border rounded-xl text-sm" required>
                     <input type="file" id="image" accept="image/*" class="w-full text-xs text-gray-400" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm">Publicar</button>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700">Publicar</button>
                 </form>
 
                 <form id="news-form" class="space-y-4">
                     <h3 class="font-bold text-orange-600 border-l-4 border-orange-600 pl-2 uppercase text-sm">Anuncio / Blog</h3>
                     <input type="text" id="news-title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm outline-none" required>
                     <textarea id="news-content" placeholder="Contenido..." class="w-full p-3 border rounded-xl text-sm h-32 outline-none" required></textarea>
-                    <button type="submit" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-orange-600">Publicar en Blog</button>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-orange-600 transition">Publicar en Blog</button>
                 </form>
             </div>
         </div>
@@ -90,18 +91,31 @@
         </div>
     </div>
 
+    <div id="login-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-indigo-600 uppercase italic">Acceso Admin</h2>
+                <button id="close-login" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="login-email" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Correo" required>
+                <input type="password" id="login-password" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Contraseña" required>
+                <button type="submit" id="btn-submit-login" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700">Entrar</button>
+            </form>
+        </div>
+    </div>
+
     <div id="legal-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
         <div class="bg-white max-w-lg w-full rounded-2xl p-8 shadow-2xl">
             <h2 class="text-xl font-bold mb-4 text-indigo-700">Políticas</h2>
-            <p class="text-gray-600 text-xs mb-6">Cumplimiento de Ley de Protección de Datos.</p>
+            <p class="text-gray-600 text-xs mb-6">Cumplimiento de Ley de Protección de Datos Personales.</p>
             <button id="btn-close-legal" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">Entendido</button>
         </div>
     </div>
 
 <script type="module">
-    // Importamos AUTH además de FIRESTORE
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -115,67 +129,65 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app); // Inicializamos Auth
-    
+    const auth = getAuth(app);
+
     let products = [];
     let news = [];
     let isAdmin = false;
 
-    // --- MANEJO DE SESIÓN REAL ---
+    // --- MANEJO DE SESIÓN ---
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            isAdmin = true;
-            document.getElementById('admin-panel').classList.remove('hidden');
-            document.getElementById('admin-main-btn').classList.add('hidden');
+        isAdmin = !!user;
+        const panel = document.getElementById('admin-panel');
+        const mainBtn = document.getElementById('admin-main-btn');
+        
+        if (isAdmin) {
+            panel.classList.remove('hidden');
+            mainBtn.classList.add('hidden');
         } else {
-            isAdmin = false;
-            document.getElementById('admin-panel').classList.add('hidden');
-            document.getElementById('admin-main-btn').classList.remove('hidden');
+            panel.classList.add('hidden');
+            mainBtn.classList.remove('hidden');
         }
         renderProducts();
         renderNews();
     });
 
-    // --- FUNCIÓN DE LOGIN  ---
-    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+    // --- MODAL LOGIN LOGIC ---
+    const loginModal = document.getElementById('login-modal');
+    document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
+    document.getElementById('close-login').onclick = () => loginModal.classList.add('hidden');
 
-    const auth = getAuth();
+    document.getElementById('login-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        const btn = document.getElementById('btn-submit-login');
 
-    document.getElementById('admin-main-btn').onclick = async () => {
-    // Nota: Considera usar un formulario HTML real en lugar de prompts
-    const email = prompt("Correo de administrador:");
-    if (!email) return;
+        btn.disabled = true;
+        btn.innerText = "Cargando...";
 
-    const password = prompt("Contraseña:");
-    if (!password) return;
-
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        
-        alert("¡Bienvenido, administrador!");
-                
-    } catch (error) {
-        // Firebase devuelve códigos de error específicos
-        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-            alert("Credenciales incorrectas.");
-        } else {
-            alert("Error al intentar acceder.");
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            loginModal.classList.add('hidden');
+            e.target.reset();
+        } catch (error) {
+            alert("Credenciales incorrectas o error de conexión.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Entrar";
         }
-        console.error("Error code:", error.code);
-    }
-};
+    };
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // --- SINCRONIZACIÓN DE DATOS ---
-    onSnapshot(collection(db, "products"), (snapshot) => {
-        products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // --- DATOS REAL-TIME ---
+    onSnapshot(collection(db, "products"), (snap) => {
+        products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderProducts();
     });
 
-    onSnapshot(collection(db, "news"), (snapshot) => {
-        news = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    onSnapshot(collection(db, "news"), (snap) => {
+        news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderNews();
     });
 
@@ -187,6 +199,7 @@
     function renderProducts() {
         const filter = document.getElementById('filter-category').value;
         const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+        
         document.getElementById('product-grid').innerHTML = filtered.map(p => `
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                 <img src="${p.image}" class="product-card img">
@@ -194,7 +207,7 @@
                     <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
                     <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
                     <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
-                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Eliminar Producto</button>` : ''}
+                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Opciones Admin</button>` : ''}
                 </div>
             </div>
         `).join('');
@@ -205,24 +218,21 @@
             <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange-400">
                 <h4 class="font-bold text-sm text-gray-800">${n.title}</h4>
                 <p class="text-xs text-gray-600">${n.content}</p>
-                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="text-red-300 text-[9px] font-bold mt-2">Eliminar</button>` : ''}
+                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="text-red-300 text-[9px] font-bold mt-2 hover:text-red-600">Eliminar</button>` : ''}
             </div>
         `).join('');
     }
 
-    // --- FUNCIONES GLOBALES ---
+    // --- FUNCIONES ADMIN ---
     window.adminDelete = async (id) => {
         if (!isAdmin) return;
-        const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR (Sin estadística)\n3. CANCELAR");
+        const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR\n3. CANCELAR");
         if (r === "1") {
-            try {
-                const statsRef = doc(db, "stats", "global");
-                await setDoc(statsRef, { salesCount: increment(1) }, { merge: true });
-                await deleteDoc(doc(db, "products", id));
-                alert("¡Venta registrada!");
-            } catch (e) { alert("Error de permisos."); }
+            const statsRef = doc(db, "stats", "global");
+            await setDoc(statsRef, { salesCount: increment(1) }, { merge: true });
+            await deleteDoc(doc(db, "products", id));
         } else if (r === "2") {
-            if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "products", id));
+            if(confirm("¿Eliminar definitivamente?")) await deleteDoc(doc(db, "products", id));
         }
     };
 
@@ -261,6 +271,7 @@
         e.target.reset();
     };
 
+    // --- UI EVENTOS ---
     document.getElementById('btn-privacy').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
     document.getElementById('btn-close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
     document.getElementById('filter-category').onchange = renderProducts;
