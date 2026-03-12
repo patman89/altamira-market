@@ -1,0 +1,229 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace & Blog Altamira Campestre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .product-card img { height: 160px; object-fit: cover; width: 100%; }
+        .hidden { display: none !important; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 flex flex-col min-h-screen">
+
+    <nav class="bg-white shadow-sm border-b p-4 sticky top-0 z-30">
+        <div class="container mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img src="https://cdn-icons-png.flaticon.com/512/1162/1162499.png" alt="Logo" class="h-10 w-10 object-contain">
+                <h1 class="text-2xl font-black text-indigo-600 tracking-tighter italic uppercase">Altamira Market</h1>
+            </div>
+            
+            <select id="filter-category" class="p-2 border rounded-lg text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
+                <option value="All">Todas las categorías</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Vehículos">Vehículos</option>
+                <option value="Hogar">Hogar y Muebles</option>
+                <option value="Ropa">Ropa y Accesorios</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Otros">Otros</option>
+            </select>
+
+            <div class="flex items-center gap-4">
+                <button id="btn-privacy" class="text-xs font-medium text-gray-400 hover:text-indigo-600">Privacidad</button>
+                <div class="bg-indigo-50 px-4 py-1 rounded-full border border-indigo-100 flex items-center gap-2">
+                    <span class="text-[10px] text-indigo-400 uppercase font-black">Ventas</span>
+                    <span id="stats-count" class="font-bold text-indigo-600 text-lg">0</span>
+                </div>
+                <button id="admin-main-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition">Panel Admin</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <div id="login-container"></div>
+
+        <div id="admin-panel" class="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-lg mb-10 hidden border-2 border-indigo-50">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-xl font-black uppercase text-gray-700 tracking-wide">Centro de Control</h2>
+                <button id="btn-logout" class="text-red-500 text-xs font-bold border border-red-100 px-4 py-2 rounded-full hover:bg-red-50">Cerrar Sesión</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <form id="product-form" class="space-y-4">
+                    <h3 class="font-bold text-indigo-600 border-l-4 border-indigo-600 pl-2 uppercase text-sm">Nuevo Producto o Servicio</h3>
+                    <input type="text" id="title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm outline-none" required>
+                    <select id="category" class="w-full p-3 border rounded-xl text-sm outline-none" required>
+                        <option value="Tecnología">Tecnología</option>
+                        <option value="Vehículos">Vehículos</option>
+                        <option value="Hogar">Hogar y Muebles</option>
+                        <option value="Ropa">Ropa y Accesorios</option>
+                        <option value="Servicios">Servicios</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-3 border rounded-xl text-sm" required>
+                    <input type="text" id="contact" placeholder="WhatsApp (Ej: 57300...)" class="w-full p-3 border rounded-xl text-sm" required>
+                    <input type="file" id="image" accept="image/*" class="w-full text-xs text-gray-400" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm">Publicar</button>
+                </form>
+
+                <form id="news-form" class="space-y-4">
+                    <h3 class="font-bold text-orange-600 border-l-4 border-orange-600 pl-2 uppercase text-sm">Anuncio / Blog</h3>
+                    <input type="text" id="news-title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm outline-none" required>
+                    <textarea id="news-content" placeholder="Contenido..." class="w-full p-3 border rounded-xl text-sm h-32 outline-none" required></textarea>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-orange-600">Publicar en Blog</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-3/4">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-8 bg-indigo-600 rounded-full"></span> Catálogo
+                </h2>
+                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+            </div>
+            <div class="lg:w-1/4">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-8 bg-orange-500 rounded-full"></span> Noticias
+                </h2>
+                <div id="news-feed" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="legal-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white max-w-lg w-full rounded-2xl p-8 shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">Políticas</h2>
+            <p class="text-gray-600 text-xs mb-6">Cumplimiento de Ley de Protección de Datos.</p>
+            <button id="btn-close-legal" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">Entendido</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA7eG9w1-M59xqrMsXigc4ABXA_7ArCVjk",
+            authDomain: "altamira-market.firebaseapp.com",
+            projectId: "altamira-market",
+            storageBucket: "altamira-market.firebasestorage.app",
+            messagingSenderId: "197188006366",
+            appId: "1:197188006366:web:5ef21cc0b63046e39e6d4f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let products = [];
+        let news = [];
+        let isAdmin = false;
+
+        // --- REFERENCIAS DOM ---
+        const productGrid = document.getElementById('product-grid');
+        const newsFeed = document.getElementById('news-feed');
+
+        // --- REAL-TIME SYNC ---
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderProducts();
+        });
+
+        onSnapshot(collection(db, "news"), (snapshot) => {
+            news = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderNews();
+        });
+
+        onSnapshot(doc(db, "stats", "global"), (d) => {
+            if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
+        });
+
+        // --- RENDERIZADO ---
+        function renderProducts() {
+            const filter = document.getElementById('filter-category').value;
+            const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+            productGrid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                    <img src="${p.image}" class="product-card img">
+                    <div class="p-4 flex flex-col flex-grow">
+                        <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
+                        <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
+                        <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase">Eliminar</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderNews() {
+            newsFeed.innerHTML = news.map(n => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange-400">
+                    <h4 class="font-bold text-sm text-gray-800">${n.title}</h4>
+                    <p class="text-xs text-gray-600">${n.content}</p>
+                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="text-red-300 text-[9px] font-bold mt-2">Eliminar</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // --- ACCIONES (EXPUESTAS A WINDOW PARA HTML) ---
+        window.adminDelete = async (id) => {
+            const r = prompt("1. VENDIDO | 2. OTRO");
+            if(r === "1") await updateDoc(doc(db, "stats", "global"), { salesCount: increment(1) });
+            if(r === "1" || r === "2") await deleteDoc(doc(db, "products", id));
+        };
+
+        window.deleteNews = async (id) => {
+            if(confirm("¿Eliminar noticia?")) await deleteDoc(doc(db, "news", id));
+        };
+
+        // --- EVENTOS ---
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = document.getElementById('image').files[0];
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                await addDoc(collection(db, "products"), {
+                    title: document.getElementById('title').value,
+                    category: document.getElementById('category').value,
+                    price: document.getElementById('price').value,
+                    contact: document.getElementById('contact').value,
+                    image: reader.result,
+                    date: Date.now()
+                });
+                e.target.reset();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('news-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "news"), {
+                title: document.getElementById('news-title').value,
+                content: document.getElementById('news-content').value,
+                date: Date.now()
+            });
+            e.target.reset();
+        });
+
+        // --- UI LOGIC ---
+        document.getElementById('admin-main-btn').onclick = () => {
+            const u = prompt("Usuario:"), p = prompt("Clave:");
+            if(u === "admin" && p === "colombia2024") {
+                isAdmin = true;
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('admin-main-btn').classList.add('hidden');
+                renderProducts(); renderNews();
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => location.reload();
+        document.getElementById('btn-privacy').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
+        document.getElementById('btn-close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+        document.getElementById('filter-category').onchange = renderProducts;
+
+    </script>
+</body>
+</html>
+
+</html>
