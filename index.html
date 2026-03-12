@@ -98,148 +98,158 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script type="module">
+    // Importamos AUTH además de FIRESTORE
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA7eG9w1-M59xqrMsXigc4ABXA_7ArCVjk",
-            authDomain: "altamira-market.firebaseapp.com",
-            projectId: "altamira-market",
-            storageBucket: "altamira-market.firebasestorage.app",
-            messagingSenderId: "197188006366",
-            appId: "1:197188006366:web:5ef21cc0b63046e39e6d4f"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyA7eG9w1-M59xqrMsXigc4ABXA_7ArCVjk",
+        authDomain: "altamira-market.firebaseapp.com",
+        projectId: "altamira-market",
+        storageBucket: "altamira-market.firebasestorage.app",
+        messagingSenderId: "197188006366",
+        appId: "1:197188006366:web:5ef21cc0b63046e39e6d4f"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        let products = [];
-        let news = [];
-        let isAdmin = false;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app); // Inicializamos Auth
+    
+    let products = [];
+    let news = [];
+    let isAdmin = false;
 
-        const productGrid = document.getElementById('product-grid');
-        const newsFeed = document.getElementById('news-feed');
-
-        // --- REAL-TIME SYNC ---
-        onSnapshot(collection(db, "products"), (snapshot) => {
-            products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderProducts();
-        });
-
-        onSnapshot(collection(db, "news"), (snapshot) => {
-            news = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderNews();
-        });
-
-        onSnapshot(doc(db, "stats", "global"), (d) => {
-            if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
-        });
-
-        function renderProducts() {
-            const filter = document.getElementById('filter-category').value;
-            const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
-            productGrid.innerHTML = filtered.map(p => `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                    <img src="${p.image}" class="product-card img">
-                    <div class="p-4 flex flex-col flex-grow">
-                        <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
-                        <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
-                        <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
-                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Eliminar Producto</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
+    // --- MANEJO DE SESIÓN REAL ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            isAdmin = true;
+            document.getElementById('admin-panel').classList.remove('hidden');
+            document.getElementById('admin-main-btn').classList.add('hidden');
+        } else {
+            isAdmin = false;
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-main-btn').classList.remove('hidden');
         }
+        renderProducts();
+        renderNews();
+    });
 
-        function renderNews() {
-            newsFeed.innerHTML = news.map(n => `
-                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange-400">
-                    <h4 class="font-bold text-sm text-gray-800">${n.title}</h4>
-                    <p class="text-xs text-gray-600">${n.content}</p>
-                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="text-red-300 text-[9px] font-bold mt-2">Eliminar</button>` : ''}
-                </div>
-            `).join('');
-        }
+    // --- FUNCIÓN DE LOGIN (REEMPLAZA EL PROMPT) ---
+    document.getElementById('admin-main-btn').onclick = async () => {
+        const email = prompt("Correo de administrador:");
+        if (!email) return;
+        const password = prompt("Contraseña:");
+        if (!password) return;
 
-        // --- LÓGICA DE ELIMINACIÓN AJUSTADA ---
-        window.adminDelete = async (id) => {
-      const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR (Sin estadística)\n3. CANCELAR");
-            if (r === "1") {
         try {
-            // Referencia al documento de estadísticas
-            const statsRef = doc(db, "stats", "global");
-
-            // Usamos setDoc con merge:true para que funcione la primera vez (cuando no existe el doc)
-            await setDoc(statsRef, { 
-                salesCount: increment(1) 
-            }, { merge: true });
-
-            // Borrar el producto después de actualizar la estadística
-            await deleteDoc(doc(db, "products", id));
-            
-            alert("¡Venta registrada con éxito!");
-        } catch (e) {
-            console.error("Error completo de Firebase:", e);
-            alert("Error de permisos o conexión. Revisa la consola.");
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            alert("Acceso denegado: Credenciales inválidas.");
+            console.error(error.message);
         }
-            } else if (r === "2") {
-                if(confirm("¿Estás seguro de eliminar sin contar como venta?")) {
-                    await deleteDoc(doc(db, "products", id));
-                }
-            }
-        };
+    };
 
-        window.deleteNews = async (id) => {
-            if(confirm("¿Eliminar noticia?")) await deleteDoc(doc(db, "news", id));
-        };
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-        // --- EVENTOS ---
-        document.getElementById('product-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const file = document.getElementById('image').files[0];
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                await addDoc(collection(db, "products"), {
-                    title: document.getElementById('title').value,
-                    category: document.getElementById('category').value,
-                    price: document.getElementById('price').value,
-                    contact: document.getElementById('contact').value,
-                    image: reader.result,
-                    date: Date.now()
-                });
-                e.target.reset();
-            };
-            reader.readAsDataURL(file);
-        });
+    // --- SINCRONIZACIÓN DE DATOS ---
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderProducts();
+    });
 
-        document.getElementById('news-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "news"), {
-                title: document.getElementById('news-title').value,
-                content: document.getElementById('news-content').value,
+    onSnapshot(collection(db, "news"), (snapshot) => {
+        news = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderNews();
+    });
+
+    onSnapshot(doc(db, "stats", "global"), (d) => {
+        if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
+    });
+
+    // --- RENDERIZADO ---
+    function renderProducts() {
+        const filter = document.getElementById('filter-category').value;
+        const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+        document.getElementById('product-grid').innerHTML = filtered.map(p => `
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                <img src="${p.image}" class="product-card img">
+                <div class="p-4 flex flex-col flex-grow">
+                    <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
+                    <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
+                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
+                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Eliminar Producto</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderNews() {
+        document.getElementById('news-feed').innerHTML = news.map(n => `
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange-400">
+                <h4 class="font-bold text-sm text-gray-800">${n.title}</h4>
+                <p class="text-xs text-gray-600">${n.content}</p>
+                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="text-red-300 text-[9px] font-bold mt-2">Eliminar</button>` : ''}
+            </div>
+        `).join('');
+    }
+
+    // --- FUNCIONES GLOBALES ---
+    window.adminDelete = async (id) => {
+        if (!isAdmin) return;
+        const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR (Sin estadística)\n3. CANCELAR");
+        if (r === "1") {
+            try {
+                const statsRef = doc(db, "stats", "global");
+                await setDoc(statsRef, { salesCount: increment(1) }, { merge: true });
+                await deleteDoc(doc(db, "products", id));
+                alert("¡Venta registrada!");
+            } catch (e) { alert("Error de permisos."); }
+        } else if (r === "2") {
+            if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "products", id));
+        }
+    };
+
+    window.deleteNews = async (id) => {
+        if(isAdmin && confirm("¿Eliminar noticia?")) await deleteDoc(doc(db, "news", id));
+    };
+
+    // --- FORMULARIOS ---
+    document.getElementById('product-form').onsubmit = async (e) => {
+        e.preventDefault();
+        if (!isAdmin) return;
+        const file = document.getElementById('image').files[0];
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            await addDoc(collection(db, "products"), {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                price: document.getElementById('price').value,
+                contact: document.getElementById('contact').value,
+                image: reader.result,
                 date: Date.now()
             });
             e.target.reset();
-        });
-
-        document.getElementById('admin-main-btn').onclick = () => {
-            const u = prompt("Usuario:"), p = prompt("Clave:");
-            if(u === "admin" && p === "colombia2024") {
-                isAdmin = true;
-                document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('admin-main-btn').classList.add('hidden');
-                renderProducts(); renderNews();
-            } else {
-                alert("Acceso denegado");
-            }
         };
+        reader.readAsDataURL(file);
+    };
 
-        document.getElementById('btn-logout').onclick = () => location.reload();
-        document.getElementById('btn-privacy').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
-        document.getElementById('btn-close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
-        document.getElementById('filter-category').onchange = renderProducts;
+    document.getElementById('news-form').onsubmit = async (e) => {
+        e.preventDefault();
+        if (!isAdmin) return;
+        await addDoc(collection(db, "news"), {
+            title: document.getElementById('news-title').value,
+            content: document.getElementById('news-content').value,
+            date: Date.now()
+        });
+        e.target.reset();
+    };
 
-    </script>
+    document.getElementById('btn-privacy').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
+    document.getElementById('btn-close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+    document.getElementById('filter-category').onchange = renderProducts;
+
+</script>
 </body>
 </html>
