@@ -164,17 +164,25 @@
 
         // --- LÓGICA DE ELIMINACIÓN AJUSTADA ---
         window.adminDelete = async (id) => {
-            const r = prompt("¿Por qué deseas eliminar este producto?\n\nEscribe:\n1 - Marcado como VENDIDO (Suma a estadísticas)\n2 - OTROS motivos (No suma a estadísticas)\n\nDeja vacío para cancelar.");
-            
+      const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR (Sin estadística)\n3. CANCELAR");
             if (r === "1") {
-                try {
-                    // Incrementar contador en Firebase y borrar producto
-                    await updateDoc(doc(db, "stats", "global"), { salesCount: increment(1) });
-                    await deleteDoc(doc(db, "products", id));
-                    alert("¡Venta registrada con éxito!");
-                } catch (e) {
-                    console.error("Error al registrar venta:", e);
-                }
+        try {
+            // Referencia al documento de estadísticas
+            const statsRef = doc(db, "stats", "global");
+
+            // Usamos setDoc con merge:true para que funcione la primera vez (cuando no existe el doc)
+            await setDoc(statsRef, { 
+                salesCount: increment(1) 
+            }, { merge: true });
+
+            // Borrar el producto después de actualizar la estadística
+            await deleteDoc(doc(db, "products", id));
+            
+            alert("¡Venta registrada con éxito!");
+        } catch (e) {
+            console.error("Error completo de Firebase:", e);
+            alert("Error de permisos o conexión. Revisa la consola.");
+        }
             } else if (r === "2") {
                 if(confirm("¿Estás seguro de eliminar sin contar como venta?")) {
                     await deleteDoc(doc(db, "products", id));
