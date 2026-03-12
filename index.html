@@ -136,20 +136,35 @@
         renderNews();
     });
 
-    // --- FUNCIÓN DE LOGIN (REEMPLAZA EL PROMPT) ---
-    document.getElementById('admin-main-btn').onclick = async () => {
-        const email = prompt("Correo de administrador:");
-        if (!email) return;
-        const password = prompt("Contraseña:");
-        if (!password) return;
+    // --- FUNCIÓN DE LOGIN  ---
+    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-            alert("Acceso denegado: Credenciales inválidas.");
-            console.error(error.message);
+    const auth = getAuth();
+
+    document.getElementById('admin-main-btn').onclick = async () => {
+    // Nota: Considera usar un formulario HTML real en lugar de prompts
+    const email = prompt("Correo de administrador:");
+    if (!email) return;
+
+    const password = prompt("Contraseña:");
+    if (!password) return;
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        alert("¡Bienvenido, administrador!");
+                
+    } catch (error) {
+        // Firebase devuelve códigos de error específicos
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+            alert("Credenciales incorrectas.");
+        } else {
+            alert("Error al intentar acceder.");
         }
-    };
+        console.error("Error code:", error.code);
+    }
+};
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
