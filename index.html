@@ -105,14 +105,6 @@
         </div>
     </div>
 
-    <div id="legal-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
-        <div class="bg-white max-w-lg w-full rounded-2xl p-8 shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-indigo-700">Políticas</h2>
-            <p class="text-gray-600 text-xs mb-6">Cumplimiento de Ley de Protección de Datos Personales.</p>
-            <button id="btn-close-legal" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">Entendido</button>
-        </div>
-    </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -135,7 +127,7 @@
     let news = [];
     let isAdmin = false;
 
-    // --- MANEJO DE SESIÓN ---
+    // --- MANEJO DE SESIÓN REAL-TIME ---
     onAuthStateChanged(auth, (user) => {
         isAdmin = !!user;
         const panel = document.getElementById('admin-panel');
@@ -152,11 +144,12 @@
         renderNews();
     });
 
-    // --- MODAL LOGIN LOGIC ---
+    // --- LÓGICA DEL MODAL DE LOGIN ---
     const loginModal = document.getElementById('login-modal');
     document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
     document.getElementById('close-login').onclick = () => loginModal.classList.add('hidden');
 
+    // --- FUNCIÓN DE LOGIN ---
     document.getElementById('login-form').onsubmit = async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
@@ -164,14 +157,18 @@
         const btn = document.getElementById('btn-submit-login');
 
         btn.disabled = true;
-        btn.innerText = "Cargando...";
+        btn.innerText = "Verificando...";
 
         try {
             await signInWithEmailAndPassword(auth, email, pass);
             loginModal.classList.add('hidden');
             e.target.reset();
         } catch (error) {
-            alert("Credenciales incorrectas o error de conexión.");
+            console.error(error.code);
+            let mensaje = "Error al ingresar.";
+            if(error.code === 'auth/invalid-credential') mensaje = "Correo o contraseña incorrectos.";
+            if(error.code === 'auth/user-not-found') mensaje = "El usuario no existe.";
+            alert(mensaje);
         } finally {
             btn.disabled = false;
             btn.innerText = "Entrar";
@@ -180,7 +177,7 @@
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // --- DATOS REAL-TIME ---
+    // --- CARGA DE DATOS ---
     onSnapshot(collection(db, "products"), (snap) => {
         products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderProducts();
@@ -207,7 +204,7 @@
                     <p class="text-lg font-black text-gray-900">$${parseInt(p.price).toLocaleString()}</p>
                     <h3 class="text-gray-500 text-xs mb-4 line-clamp-3">${p.title}</h3>
                     <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white py-2 rounded-xl text-center text-xs font-bold mb-2">WhatsApp</a>
-                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Opciones Admin</button>` : ''}
+                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-2 hover:underline">Gestionar Producto</button>` : ''}
                 </div>
             </div>
         `).join('');
@@ -223,27 +220,25 @@
         `).join('');
     }
 
-    // --- FUNCIONES ADMIN ---
+    // --- ACCIONES ADMIN ---
     window.adminDelete = async (id) => {
-        if (!isAdmin) return;
-        const r = prompt("1. VENDIDO (+1 Estadística)\n2. ELIMINAR\n3. CANCELAR");
+        const r = prompt("1. MARCAR COMO VENDIDO\n2. ELIMINAR\n3. CANCELAR");
         if (r === "1") {
             const statsRef = doc(db, "stats", "global");
             await setDoc(statsRef, { salesCount: increment(1) }, { merge: true });
             await deleteDoc(doc(db, "products", id));
         } else if (r === "2") {
-            if(confirm("¿Eliminar definitivamente?")) await deleteDoc(doc(db, "products", id));
+            if(confirm("¿Eliminar este anuncio?")) await deleteDoc(doc(db, "products", id));
         }
     };
 
     window.deleteNews = async (id) => {
-        if(isAdmin && confirm("¿Eliminar noticia?")) await deleteDoc(doc(db, "news", id));
+        if(confirm("¿Eliminar noticia?")) await deleteDoc(doc(db, "news", id));
     };
 
     // --- FORMULARIOS ---
     document.getElementById('product-form').onsubmit = async (e) => {
         e.preventDefault();
-        if (!isAdmin) return;
         const file = document.getElementById('image').files[0];
         const reader = new FileReader();
         reader.onloadend = async () => {
@@ -262,7 +257,6 @@
 
     document.getElementById('news-form').onsubmit = async (e) => {
         e.preventDefault();
-        if (!isAdmin) return;
         await addDoc(collection(db, "news"), {
             title: document.getElementById('news-title').value,
             content: document.getElementById('news-content').value,
@@ -271,11 +265,7 @@
         e.target.reset();
     };
 
-    // --- UI EVENTOS ---
-    document.getElementById('btn-privacy').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
-    document.getElementById('btn-close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
     document.getElementById('filter-category').onchange = renderProducts;
-
 </script>
 </body>
 </html>
