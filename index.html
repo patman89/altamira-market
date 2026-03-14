@@ -105,6 +105,22 @@
         </div>
     </div>
 
+    <div id="privacy-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white max-w-lg w-full rounded-2xl p-8 shadow-2xl overflow-y-auto max-h-[80vh]">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-xl font-black text-indigo-600 uppercase italic">Políticas de Privacidad</h2>
+                <button id="close-privacy" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600 leading-relaxed">
+                <p class="font-bold text-gray-800">Bienvenido a Altamira-Market</p>
+                <p>1. **Uso de Datos:** Los números de contacto son responsabilidad exclusiva de quien publica el anuncio para facilitar la venta.</p>
+                <p>2. **Responsabilidad:** La plataforma actúa solo como puente informativo. No nos hacemos responsables por transacciones o calidad de productos.</p>
+                <p>3. **Seguridad:** Recomendamos realizar entregas en puntos comunes del conjunto y nunca compartir claves bancarias.</p>
+            </div>
+            <button id="btn-entendido" class="w-full mt-8 bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition">He leído y acepto</button>
+        </div>
+    </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -127,7 +143,7 @@
     let news = [];
     let isAdmin = false;
 
-    // --- MANEJO DE SESIÓN REAL-TIME ---
+    // --- MANEJO DE SESIÓN ---
     onAuthStateChanged(auth, (user) => {
         isAdmin = !!user;
         const panel = document.getElementById('admin-panel');
@@ -144,61 +160,46 @@
         renderNews();
     });
 
-    // --- LÓGICA DEL MODAL DE LOGIN ---
+    // --- LÓGICA MODALES (LOGIN Y PRIVACIDAD) ---
     const loginModal = document.getElementById('login-modal');
+    const privacyModal = document.getElementById('privacy-modal');
+
+    // Admin login toggle
     document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
     document.getElementById('close-login').onclick = () => loginModal.classList.add('hidden');
 
+    // Privacidad toggle
+    document.getElementById('btn-privacy').onclick = () => privacyModal.classList.remove('hidden');
+    document.getElementById('close-privacy').onclick = () => privacyModal.classList.add('hidden');
+    document.getElementById('btn-entendido').onclick = () => privacyModal.classList.add('hidden');
+
+    // Cerrar al hacer clic fuera (Backdrop)
+    window.onclick = (event) => {
+        if (event.target == loginModal) loginModal.classList.add('hidden');
+        if (event.target == privacyModal) privacyModal.classList.add('hidden');
+    };
+
     // --- FUNCIÓN DE LOGIN ---
     document.getElementById('login-form').onsubmit = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value.trim();
-    const pass = document.getElementById('login-password').value;
-    const btn = document.getElementById('btn-submit-login');
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const pass = document.getElementById('login-password').value;
+        const btn = document.getElementById('btn-submit-login');
 
-    btn.disabled = true;
-    btn.innerText = "Verificando...";
+        btn.disabled = true;
+        btn.innerText = "Verificando...";
 
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-        // Aquí puedes ver el UID en la consola si quieres:
-        console.log("Login exitoso. UID del admin:", userCredential.user.uid);
-        
-        loginModal.classList.add('hidden');
-        e.target.reset();
-    } catch (error) {
-        console.error("Error completo de Firebase:", error);
-        
-        let mensaje = "Error crítico de conexión.";
-        
-        // Manejo detallado de errores comunes
-        switch (error.code) {
-            case 'auth/invalid-credential':
-                mensaje = "Correo o contraseña incorrectos.";
-                break;
-            case 'auth/user-not-found':
-                mensaje = "Este correo no está registrado como administrador.";
-                break;
-            case 'auth/wrong-password':
-                mensaje = "La contraseña es incorrecta.";
-                break;
-            case 'auth/invalid-email':
-                mensaje = "El formato del correo no es válido.";
-                break;
-            case 'auth/too-many-requests':
-                mensaje = "Demasiados intentos. Intenta más tarde.";
-                break;
-            case 'auth/operation-not-allowed':
-                mensaje = "Debes activar 'Correo/Contraseña' en la consola de Firebase.";
-                break;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            loginModal.classList.add('hidden');
+            e.target.reset();
+        } catch (error) {
+            alert("Error: Credenciales inválidas");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Entrar";
         }
-        
-        alert(mensaje);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "Entrar";
-    }
-};
+    };
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
