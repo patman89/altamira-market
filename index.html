@@ -3,49 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altamira Market & Events</title>
+    <title>Altamira Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
+        /* Estilo Marketplace Compacto */
         .product-image-container { 
             position: relative; 
             width: 100%; 
-            height: 200px; 
+            aspect-ratio: 1 / 1; /* Imagen cuadrada */
             overflow: hidden; 
-            background-color: #f9fafb; 
+            background-color: #f3f4f6; 
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #f3f4f6;
         }
         .product-image-container img { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Llena el espacio como en FB */
             transition: transform 0.3s ease; 
         }
-        .product-card:hover img { transform: scale(1.05); }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-card:hover img { transform: scale(1.03); }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen antialiased">
 
-    <nav class="bg-white border-b sticky top-0 z-50 py-4 shadow-sm">
-        <div class="container mx-auto px-6 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2.5 rounded-xl">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                </div>
-                <h1 class="text-2xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
-            </div>
-            
-            <div class="flex items-center gap-5">
-                <select id="filter-category" class="bg-gray-100 border-none text-sm rounded-full px-5 py-2.5 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
-                    <option value="All">Todas las categorías</option>
+    <nav class="bg-white border-b sticky top-0 z-50 py-2 shadow-sm">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-lg font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
+            <div class="flex items-center gap-2">
+                <select id="filter-category" class="bg-gray-100 border-none text-[11px] rounded-full px-3 py-1.5 outline-none font-semibold text-gray-700">
+                    <option value="All">Todo</option>
                     <option value="Tecnología">Tecnología</option>
                     <option value="Vehículos">Vehículos</option>
                     <option value="Hogar">Hogar</option>
@@ -53,280 +47,227 @@
                     <option value="Servicios">Servicios</option>
                     <option value="Otros">Otros</option>
                 </select>
-                <button id="admin-main-btn" class="bg-gray-950 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition">Admin</button>
+                <button id="admin-main-btn" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-[11px] font-bold">Admin</button>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-6 py-10 flex-grow">
-        <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-3xl p-8 shadow-sm mb-16">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b">
-                <div class="flex items-center gap-3">
-                    <span class="status-bullet bg-indigo-500 animate-pulse"></span>
-                    <h2 class="text-xl font-bold text-gray-950 uppercase tracking-tight">Centro de Control</h2>
-                </div>
-                <button id="btn-logout" class="text-red-500 text-xs font-bold flex items-center gap-1.5">Cerrar Sesión</button>
+    <main class="container mx-auto px-2 py-4 flex-grow">
+        <section id="admin-panel" class="hidden bg-white rounded-xl p-4 shadow-sm mb-6 border">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-bold uppercase">Panel de Control</h2>
+                <button id="btn-logout" class="text-red-500 text-[10px] font-bold">Cerrar Sesión</button>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <form id="product-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-indigo-400"></span><p class="text-xs font-bold text-indigo-700 uppercase">Nuevo Producto</p></div>
-                    <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-3 border rounded-xl text-sm" required>
-                    <select id="category" class="w-full p-3 border rounded-xl text-sm" required></select>
-                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="text" id="contact" placeholder="WhatsApp" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="file" id="image" accept="image/*" class="text-xs w-full" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold">Publicar</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form id="product-form" class="space-y-2">
+                    <input type="text" id="title" placeholder="Producto" class="w-full p-2 border rounded text-xs" required>
+                    <select id="category" class="w-full p-2 border rounded text-xs" required></select>
+                    <input type="number" id="price" placeholder="Precio" class="w-full p-2 border rounded text-xs" required>
+                    <input type="text" id="contact" placeholder="WhatsApp (ej: 57300...)" class="w-full p-2 border rounded text-xs" required>
+                    <input type="file" id="image" accept="image/*" class="text-[10px]" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-bold text-xs">Publicar</button>
                 </form>
-                <form id="news-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-orange-400"></span><p class="text-xs font-bold text-orange-700 uppercase">Nuevo Anuncio</p></div>
-                    <input type="text" id="news-title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm" required>
-                    <textarea id="news-content" placeholder="Mensaje..." class="w-full p-3 border rounded-xl text-sm h-32" required></textarea>
-                    <button type="submit" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold">Enviar al Blog</button>
+                <form id="news-form" class="space-y-2">
+                    <input type="text" id="news-title" placeholder="Título Noticia" class="w-full p-2 border rounded text-xs" required>
+                    <textarea id="news-content" placeholder="Contenido" class="w-full p-2 border rounded text-xs h-16" required></textarea>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-2 rounded font-bold text-xs">Anunciar</button>
                 </form>
-                <form id="event-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-emerald-400"></span><p class="text-xs font-bold text-emerald-700 uppercase">Nuevo Evento</p></div>
-                    <input type="text" id="event-name" placeholder="Evento" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="date" id="event-date" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-3 border rounded-xl text-sm" required>
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold">Agendar</button>
+                <form id="event-form" class="space-y-2">
+                    <input type="text" id="event-name" placeholder="Evento" class="w-full p-2 border rounded text-xs" required>
+                    <input type="date" id="event-date" class="w-full p-2 border rounded text-xs" required>
+                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-2 border rounded text-xs" required>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded font-bold text-xs">Agendar</button>
                 </form>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-12">
-            <div class="xl:col-span-3">
-                <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-indigo-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Catálogo</h2></div>
-                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div class="flex flex-col lg:flex-row gap-6">
+            <div class="flex-grow">
+                <h2 class="text-sm font-bold mb-4 px-2">Sugerencias de hoy</h2>
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2">
+                    </div>
             </div>
-            <div class="xl:col-span-1">
-                <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-orange-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Anuncios</h2></div>
-                <div id="news-feed" class="space-y-6"></div>
+
+            <div class="w-full lg:w-72 space-y-4">
+                <h2 class="text-sm font-bold px-2">Noticias del Conjunto</h2>
+                <div id="news-feed" class="space-y-3 px-2"></div>
             </div>
         </div>
 
-        <section class="mt-24 pt-12 border-t">
-            <div class="flex items-center justify-center gap-4 mb-10"><span class="status-bullet bg-emerald-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Próximos Eventos</h2></div>
-            <div id="event-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        <section class="mt-10 border-t pt-6">
+            <h2 class="text-sm font-bold mb-4 px-2">Próximos Eventos</h2>
+            <div id="event-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 px-2"></div>
         </section>
     </main>
 
-    <footer class="bg-white border-t border-gray-100 py-10 mt-16 shadow-inner">
-        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-center md:text-left">
-                <p class="text-sm text-gray-500 font-medium">© 2026 Altamira Campestre.</p>
-                <button id="btn-legal" class="text-indigo-600 text-xs font-bold hover:underline mt-2 uppercase tracking-widest">Politicas y Privacidad (Ley 1581)</button>
-            </div>
-            <div class="flex items-center gap-3 bg-gray-50 px-6 py-3 rounded-full border border-gray-100">
-                <span class="status-bullet bg-green-400"></span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ventas Totales:</span>
-                <span id="stats-count" class="text-xl font-extrabold text-indigo-600 tabular-nums">0</span>
-            </div>
-        </div>
-    </footer>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
-                <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
-            </div>
-            <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
-                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
-                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
-                </section>
-                <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
-                    "Fomentamos el Comercio seguro, la Economía Circular, la Confinza y el Respeto mutuo entre Vecinos."
-                </div>
-            </div>
-        </div>
-    </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA7eG9w1-M59xqrMsXigc4ABXA_7ArCVjk",
+            authDomain: "altamira-market.firebaseapp.com",
+            projectId: "altamira-market",
+            storageBucket: "altamira-market.firebasestorage.app",
+            messagingSenderId: "197188006366",
+            appId: "1:197188006366:web:5ef21cc0b63046e39e6d4f"
+        };
 
-    <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-10 shadow-2xl">
-            <h3 class="text-2xl font-extrabold text-center mb-8 uppercase tracking-tighter">Acceso Admin</h3>
-            <form id="login-form" class="space-y-5">
-                <input type="email" id="login-email" placeholder="Correo" class="w-full p-4 border rounded-xl text-sm" required>
-                <input type="password" id="login-password" placeholder="Contraseña" class="w-full p-4 border rounded-xl text-sm" required>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-sm uppercase">Entrar</button>
-                <button type="button" id="close-login" class="w-full text-xs text-gray-400 font-bold uppercase mt-3">Cancelar</button>
-            </form>
-        </div>
-    </div>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, increment, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        let products = [], news = [], events = [], isAdmin = false;
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyA7eG9w1-M59xqrMsXigc4ABXA_7ArCVjk",
-        authDomain: "altamira-market.firebaseapp.com",
-        projectId: "altamira-market",
-        storageBucket: "altamira-market.firebasestorage.app",
-        messagingSenderId: "197188006366",
-        appId: "1:197188006366:web:5ef21cc0b63046e39e6d4f"
-    };
+        // Auth
+        onAuthStateChanged(auth, (user) => {
+            isAdmin = !!user;
+            document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
+            document.getElementById('admin-main-btn').classList.toggle('hidden', isAdmin);
+            renderAll();
+        });
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+        const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
 
-    let products = [], news = [], events = [], isAdmin = false;
+        // Realtime Data
+        onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
+            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderProducts();
+        });
 
-    const toggleModal = (id, show) => document.getElementById(id).classList.toggle('hidden', !show);
-    document.getElementById('btn-legal').onclick = () => toggleModal('legal-modal', true);
-    document.getElementById('close-legal').onclick = () => toggleModal('legal-modal', false);
-    document.getElementById('admin-main-btn').onclick = () => toggleModal('login-modal', true);
-    document.getElementById('close-login').onclick = () => toggleModal('login-modal', false);
+        onSnapshot(query(collection(db, "news"), orderBy("date", "desc")), (snap) => {
+            news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderNews();
+        });
 
-    onAuthStateChanged(auth, (user) => {
-        isAdmin = !!user;
-        document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
-        document.getElementById('admin-main-btn').classList.toggle('hidden', isAdmin);
-        renderAll();
-    });
+        onSnapshot(query(collection(db, "events"), orderBy("eventDate", "asc")), (snap) => {
+            events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderEvents();
+        });
 
-    const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
-
-    onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
-        products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderProducts();
-    });
-
-    onSnapshot(query(collection(db, "news"), orderBy("date", "desc")), (snap) => {
-        news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderNews();
-    });
-
-    onSnapshot(query(collection(db, "events"), orderBy("eventDate", "asc")), (snap) => {
-        events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderEvents();
-    });
-
-    onSnapshot(doc(db, "stats", "global"), (d) => {
-        if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
-    });
-
-    function renderProducts() {
-        const filter = document.getElementById('filter-category').value;
-        const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
-        document.getElementById('product-grid').innerHTML = filtered.map(p => `
-            <div class="product-card bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col">
-                <div class="product-image-container"><img src="${p.image}" loading="lazy"></div>
-                <div class="p-5">
-                    <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-1 h-10 leading-tight">${p.title}</h3>
-                    <p class="text-xl font-extrabold text-gray-950 mb-4">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-2.5 rounded-xl text-[11px] font-extrabold uppercase block hover:bg-green-600 transition">Contactar</a>
-                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[9px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderNews() {
-        document.getElementById('news-feed').innerHTML = news.map(n => `
-            <div class="bg-white p-5 rounded-2xl border border-gray-100 relative">
-                <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                <h4 class="font-bold text-sm text-gray-950 mb-1">${n.title}</h4>
-                <p class="text-xs text-gray-600">${n.content}</p>
-                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
-            </div>
-        `).join('');
-    }
-
-    function renderEvents() {
-        document.getElementById('event-list').innerHTML = events.map(e => {
-            const date = new Date(e.eventDate + "T00:00:00");
-            return `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 relative">
-                    <div class="bg-emerald-600 text-white min-w-[50px] h-[50px] rounded-xl flex flex-col items-center justify-center">
-                        <span class="text-lg font-bold leading-none">${date.getDate()}</span>
-                        <span class="text-[9px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
+        // FUNCION RENDER PRODUCTOS ESTILO MARKETPLACE
+        function renderProducts() {
+            const filter = document.getElementById('filter-category').value;
+            const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+            
+            document.getElementById('product-grid').innerHTML = filtered.map(p => `
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition flex flex-col border border-gray-200">
+                    <div class="product-image-container">
+                        <img src="${p.image}" loading="lazy">
                     </div>
-                    <div>
-                        <h4 class="font-bold text-xs text-gray-950 leading-tight">${e.name}</h4>
-                        <p class="text-[9px] font-bold text-emerald-700 uppercase mt-1">📍 ${e.location}</p>
+                    <div class="p-2 flex flex-col flex-grow">
+                        <h3 class="text-[13px] font-normal text-gray-800 line-clamp-1 order-1">${p.title}</h3>
+                        <p class="text-[15px] font-bold text-gray-900 mb-2 order-2">$${parseInt(p.price).toLocaleString('es-CO')}</p>
+                        
+                        <a href="https://wa.me/${p.contact}" target="_blank" 
+                           class="mt-auto bg-green-500 text-white text-center py-1.5 rounded-md text-[11px] font-bold uppercase flex items-center justify-center gap-1 hover:bg-green-600 order-3">
+                           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.674 1.436 5.662 1.436h.008c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                           WhatsApp
+                        </a>
+                        
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[9px] font-bold uppercase mt-2">Gestionar</button>` : ''}
                     </div>
-                    ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
                 </div>
-            `;
-        }).join('');
-    }
+            `).join('');
+        }
 
-    window.adminDelete = async (id) => {
-        const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
-        if (r === "1") {
-            await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
-            await deleteDoc(doc(db, "products", id));
-        } else if (r === "2") await deleteDoc(doc(db, "products", id));
-    };
+        // Render Noticias
+        function renderNews() {
+            document.getElementById('news-feed').innerHTML = news.map(n => `
+                <div class="bg-white p-3 rounded-lg border border-gray-200 relative shadow-sm">
+                    <h4 class="font-bold text-[11px] text-indigo-600 uppercase mb-1">${n.title}</h4>
+                    <p class="text-[11px] text-gray-600 leading-snug">${n.content}</p>
+                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300">×</button>` : ''}
+                </div>
+            `).join('');
+        }
 
-    window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
-    window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
+        // Render Eventos
+        function renderEvents() {
+            document.getElementById('event-list').innerHTML = events.map(e => {
+                const date = new Date(e.eventDate + "T00:00:00");
+                return `
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 flex items-center gap-3 relative shadow-sm">
+                        <div class="bg-indigo-100 text-indigo-700 min-w-[45px] h-[45px] rounded flex flex-col items-center justify-center">
+                            <span class="text-sm font-black">${date.getDate()}</span>
+                            <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'})}</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-[11px] text-gray-900 truncate">${e.name}</h4>
+                            <p class="text-[10px] text-gray-500">📍 ${e.location}</p>
+                        </div>
+                        ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300">×</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
 
-    document.getElementById('product-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            await addDoc(collection(db, "products"), {
-                title: document.getElementById('title').value,
-                category: document.getElementById('category').value,
-                price: document.getElementById('price').value,
-                contact: document.getElementById('contact').value,
-                image: reader.result,
+        // Funciones Globales para Borrar
+        window.adminDelete = async (id) => {
+            const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
+            if (r === "1") {
+                await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
+                await deleteDoc(doc(db, "products", id));
+            } else if (r === "2") await deleteDoc(doc(db, "products", id));
+        };
+        window.deleteNews = async (id) => { if(confirm("¿Borrar?")) await deleteDoc(doc(db, "news", id)); };
+        window.deleteEvent = async (id) => { if(confirm("¿Borrar?")) await deleteDoc(doc(db, "events", id)); };
+
+        // Formularios
+        document.getElementById('product-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                await addDoc(collection(db, "products"), {
+                    title: document.getElementById('title').value,
+                    category: document.getElementById('category').value,
+                    price: document.getElementById('price').value,
+                    contact: document.getElementById('contact').value,
+                    image: reader.result,
+                    date: Date.now()
+                });
+                e.target.reset();
+            };
+            reader.readAsDataURL(document.getElementById('image').files[0]);
+        };
+
+        document.getElementById('news-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "news"), {
+                title: document.getElementById('news-title').value,
+                content: document.getElementById('news-content').value,
                 date: Date.now()
             });
             e.target.reset();
         };
-        reader.readAsDataURL(document.getElementById('image').files[0]);
-    };
 
-    document.getElementById('news-form').onsubmit = async (e) => {
-        e.preventDefault();
-        await addDoc(collection(db, "news"), {
-            title: document.getElementById('news-title').value,
-            content: document.getElementById('news-content').value,
-            date: Date.now()
-        });
-        e.target.reset();
-    };
+        document.getElementById('event-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "events"), {
+                name: document.getElementById('event-name').value,
+                eventDate: document.getElementById('event-date').value,
+                location: document.getElementById('event-location').value
+            });
+            e.target.reset();
+        };
 
-    document.getElementById('event-form').onsubmit = async (e) => {
-        e.preventDefault();
-        await addDoc(collection(db, "events"), {
-            name: document.getElementById('event-name').value,
-            eventDate: document.getElementById('event-date').value,
-            location: document.getElementById('event-location').value
-        });
-        e.target.reset();
-    };
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
+        document.getElementById('filter-category').onchange = renderProducts;
 
-    document.getElementById('login-form').onsubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
-            toggleModal('login-modal', false);
-        } catch (error) { alert("Error de acceso"); }
-    };
+        const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
+        document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
 
-    document.getElementById('btn-logout').onclick = () => signOut(auth);
-    document.getElementById('filter-category').onchange = renderProducts;
-    
-    const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
-    document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
-</script>
+        // Modal de login simple
+        document.getElementById('admin-main-btn').onclick = async () => {
+            const email = prompt("Email:");
+            const pass = prompt("Password:");
+            if(email && pass) {
+                try { await signInWithEmailAndPassword(auth, email, pass); } 
+                catch(e) { alert("Error"); }
+            }
+        };
+
+    </script>
 </body>
 </html>
