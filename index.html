@@ -8,25 +8,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        
-        .product-image-container { 
-            position: relative; 
-            width: 100%; 
-            aspect-ratio: 1 / 1; 
-            overflow: hidden; 
-            background-color: #f9fafb; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .product-image-container img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            transition: transform 0.3s ease; 
-        }
-        .product-card:hover img { transform: scale(1.05); }
-        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; }
+        .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     </style>
@@ -41,7 +24,6 @@
                 </div>
                 <h1 class="text-xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
             </div>
-            
             <div class="flex items-center gap-3">
                 <select id="filter-category" class="bg-gray-100 border-none text-xs rounded-full px-4 py-2 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
                     <option value="All">Todas las categorías</option>
@@ -97,11 +79,9 @@
                 <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-indigo-500"></span><h2 class="text-xl font-bold text-gray-950">Catálogo</h2></div>
                 <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
-            
             <div class="xl:col-span-1 border-t pt-8 xl:border-t-0 xl:pt-0 xl:border-l xl:pl-8">
                 <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-orange-500"></span><h2 class="text-xl font-bold text-gray-950">Anuncios</h2></div>
-                <div id="news-feed" class="space-y-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 xl:gap-0">
-                    </div>
+                <div id="news-feed" class="space-y-4"></div>
             </div>
         </div>
 
@@ -113,13 +93,31 @@
 
     <footer class="bg-white border-t py-8 mt-12 shadow-inner">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
+            <div>
+                <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
+                <button id="btn-legal" class="text-indigo-600 text-[10px] font-bold hover:underline mt-1 uppercase tracking-widest">Políticas & Privacidad</button>
+            </div>
             <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border">
                 <span class="status-bullet bg-green-400"></span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Ventas Totales:</span>
                 <span id="stats-count" class="text-lg font-black text-indigo-600">0</span>
             </div>
         </div>
     </footer>
+
+    <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Políticas y Privacidad</h3>
+                <button id="close-legal" class="text-gray-400 text-2xl hover:text-gray-950">&times;</button>
+            </div>
+            <div class="text-xs text-gray-600 space-y-4 leading-relaxed">
+                <p><strong>1. Uso de Datos:</strong> Esta plataforma es una herramienta comunitaria para Altamira Campestre. No compartimos sus datos con terceros.</p>
+                <p><strong>2. Responsabilidad:</strong> El administrador no se hace responsable por las transacciones económicas entre copropietarios.</p>
+                <p><strong>3. Contenido:</strong> Se prohíbe la publicación de contenido ofensivo o ilegal.</p>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -141,6 +139,10 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
+        // Gestión de Modales
+        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
+        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+
         onAuthStateChanged(auth, (user) => {
             isAdmin = !!user;
             document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
@@ -150,6 +152,7 @@
 
         const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
 
+        // Listeners Firestore
         onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts();
@@ -265,7 +268,7 @@
         document.getElementById('admin-main-btn').onclick = () => {
             const email = prompt("Admin Email:");
             const pass = prompt("Password:");
-            if(email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Error de acceso"));
+            if(email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Acceso denegado"));
         };
         document.getElementById('btn-logout').onclick = () => signOut(auth);
         document.getElementById('filter-category').onchange = renderProducts;
