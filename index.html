@@ -9,7 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Estilo Marketplace (Productos) */
         .product-image-container { 
             position: relative; 
             width: 100%; 
@@ -98,9 +97,11 @@
                 <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-indigo-500"></span><h2 class="text-xl font-bold text-gray-950">Catálogo</h2></div>
                 <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
-            <div class="xl:col-span-1 border-l pl-8 hidden xl:block">
+            
+            <div class="xl:col-span-1 border-t pt-8 xl:border-t-0 xl:pt-0 xl:border-l xl:pl-8">
                 <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-orange-500"></span><h2 class="text-xl font-bold text-gray-950">Anuncios</h2></div>
-                <div id="news-feed" class="space-y-4"></div>
+                <div id="news-feed" class="space-y-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 xl:gap-0">
+                    </div>
             </div>
         </div>
 
@@ -112,9 +113,7 @@
 
     <footer class="bg-white border-t py-8 mt-12 shadow-inner">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div>
-                <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
-            </div>
+            <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
             <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border">
                 <span class="status-bullet bg-green-400"></span>
                 <span id="stats-count" class="text-lg font-black text-indigo-600">0</span>
@@ -170,7 +169,6 @@
             if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
         });
 
-        // RENDER PRODUCTOS (Imagen -> Título -> Precio -> WhatsApp)
         function renderProducts() {
             const filter = document.getElementById('filter-category').value;
             const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
@@ -180,19 +178,16 @@
                     <div class="p-3 flex flex-col flex-grow">
                         <h3 class="text-[12px] font-medium text-gray-500 line-clamp-1 mb-0.5">${p.title}</h3>
                         <p class="text-[15px] font-bold text-gray-950 mb-3">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                        
                         <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold uppercase block hover:bg-green-600 transition">WhatsApp</a>
-                        
                         ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        // RENDER NOTICIAS (Estilo Original: Borde naranja)
         function renderNews() {
             document.getElementById('news-feed').innerHTML = news.map(n => `
-                <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm">
+                <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
                     <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
                     <h4 class="font-bold text-[11px] text-gray-950 mb-1 uppercase">${n.title}</h4>
                     <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
@@ -201,7 +196,6 @@
             `).join('');
         }
 
-        // RENDER EVENTOS (Estilo Original: Calendario esmeralda)
         function renderEvents() {
             document.getElementById('event-list').innerHTML = events.map(e => {
                 const date = new Date(e.eventDate + "T00:00:00");
@@ -221,7 +215,6 @@
             }).join('');
         }
 
-        // Funciones de Gestión
         window.adminDelete = async (id) => {
             const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
             if (r === "1") {
@@ -232,7 +225,6 @@
         window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
         window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
-        // Formularios
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
             const reader = new FileReader();
@@ -273,7 +265,7 @@
         document.getElementById('admin-main-btn').onclick = () => {
             const email = prompt("Admin Email:");
             const pass = prompt("Password:");
-            if(email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Error"));
+            if(email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Error de acceso"));
         };
         document.getElementById('btn-logout').onclick = () => signOut(auth);
         document.getElementById('filter-category').onchange = renderProducts;
