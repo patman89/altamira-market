@@ -9,16 +9,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
+        /* Estilo estilo Marketplace (Compacto) */
         .product-image-container { 
             position: relative; 
             width: 100%; 
-            height: 200px; 
+            height: 180px; /* Más bajo para mayor densidad */
             overflow: hidden; 
             background-color: #f9fafb; 
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #f3f4f6;
         }
         .product-image-container img { 
             max-width: 100%; 
@@ -34,17 +34,17 @@
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
 
-    <nav class="bg-white border-b sticky top-0 z-50 py-4 shadow-sm">
-        <div class="container mx-auto px-6 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2.5 rounded-xl">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+    <nav class="bg-white border-b sticky top-0 z-50 py-3 shadow-sm">
+        <div class="container mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                 </div>
-                <h1 class="text-2xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
+                <h1 class="text-xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
             </div>
             
-            <div class="flex items-center gap-5">
-                <select id="filter-category" class="bg-gray-100 border-none text-sm rounded-full px-5 py-2.5 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
+            <div class="flex items-center gap-3">
+                <select id="filter-category" class="bg-gray-100 border-none text-xs rounded-full px-4 py-2 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
                     <option value="All">Todas las categorías</option>
                     <option value="Tecnología">Tecnología</option>
                     <option value="Vehículos">Vehículos</option>
@@ -53,78 +53,78 @@
                     <option value="Servicios">Servicios</option>
                     <option value="Otros">Otros</option>
                 </select>
-                <button id="admin-main-btn" class="bg-gray-950 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition">Admin</button>
+                <button id="admin-main-btn" class="bg-gray-950 text-white px-5 py-2 rounded-full text-xs font-semibold hover:bg-gray-800 transition">Admin</button>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-6 py-10 flex-grow">
-        <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-3xl p-8 shadow-sm mb-16">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b">
-                <div class="flex items-center gap-3">
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-10">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <div class="flex items-center gap-2">
                     <span class="status-bullet bg-indigo-500 animate-pulse"></span>
-                    <h2 class="text-xl font-bold text-gray-950 uppercase tracking-tight">Centro de Control</h2>
+                    <h2 class="text-sm font-bold text-gray-950 uppercase tracking-tight">Centro de Control</h2>
                 </div>
-                <button id="btn-logout" class="text-red-500 text-xs font-bold flex items-center gap-1.5">Cerrar Sesión</button>
+                <button id="btn-logout" class="text-red-500 text-[10px] font-bold uppercase">Cerrar Sesión</button>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <form id="product-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-indigo-400"></span><p class="text-xs font-bold text-indigo-700 uppercase">Nuevo Producto</p></div>
-                    <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-3 border rounded-xl text-sm" required>
-                    <select id="category" class="w-full p-3 border rounded-xl text-sm" required></select>
-                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="text" id="contact" placeholder="WhatsApp" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="file" id="image" accept="image/*" class="text-xs w-full" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold">Publicar</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <form id="product-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-indigo-700 uppercase">Nuevo Producto</p>
+                    <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <select id="category" class="w-full p-2.5 border rounded-lg text-xs" required></select>
+                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="contact" placeholder="WhatsApp" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="file" id="image" accept="image/*" class="text-[10px] w-full" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold text-xs">Publicar</button>
                 </form>
-                <form id="news-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-orange-400"></span><p class="text-xs font-bold text-orange-700 uppercase">Nuevo Anuncio</p></div>
-                    <input type="text" id="news-title" placeholder="Título" class="w-full p-3 border rounded-xl text-sm" required>
-                    <textarea id="news-content" placeholder="Mensaje..." class="w-full p-3 border rounded-xl text-sm h-32" required></textarea>
-                    <button type="submit" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold">Enviar al Blog</button>
+                <form id="news-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-orange-700 uppercase">Nuevo Anuncio</p>
+                    <input type="text" id="news-title" placeholder="Título" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <textarea id="news-content" placeholder="Mensaje..." class="w-full p-2.5 border rounded-lg text-xs h-20" required></textarea>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-2.5 rounded-lg font-bold text-xs">Enviar</button>
                 </form>
-                <form id="event-form" class="space-y-4 p-6 bg-gray-50 rounded-2xl shadow-inner">
-                    <div class="flex items-center gap-2 mb-2"><span class="status-bullet bg-emerald-400"></span><p class="text-xs font-bold text-emerald-700 uppercase">Nuevo Evento</p></div>
-                    <input type="text" id="event-name" placeholder="Evento" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="date" id="event-date" class="w-full p-3 border rounded-xl text-sm" required>
-                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-3 border rounded-xl text-sm" required>
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold">Agendar</button>
+                <form id="event-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-emerald-700 uppercase">Nuevo Evento</p>
+                    <input type="text" id="event-name" placeholder="Evento" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="date" id="event-date" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-xs">Agendar</button>
                 </form>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-12">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div class="xl:col-span-3">
-                <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-indigo-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Catálogo</h2></div>
-                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-indigo-500"></span><h2 class="text-xl font-bold text-gray-950">Catálogo</h2></div>
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
             </div>
-            <div class="xl:col-span-1">
-                <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-orange-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Anuncios</h2></div>
-                <div id="news-feed" class="space-y-6"></div>
+            <div class="xl:col-span-1 border-l pl-8 hidden xl:block">
+                <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-orange-500"></span><h2 class="text-xl font-bold text-gray-950">Anuncios</h2></div>
+                <div id="news-feed" class="space-y-4"></div>
             </div>
         </div>
 
-        <section class="mt-24 pt-12 border-t">
-            <div class="flex items-center justify-center gap-4 mb-10"><span class="status-bullet bg-emerald-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Próximos Eventos</h2></div>
-            <div id="event-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        <section class="mt-16 pt-8 border-t">
+            <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Eventos</h2></div>
+            <div id="event-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
         </section>
     </main>
 
-    <footer class="bg-white border-t border-gray-100 py-10 mt-16 shadow-inner">
-        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-center md:text-left">
-                <p class="text-sm text-gray-500 font-medium">© 2026 Altamira Campestre.</p>
-                <button id="btn-legal" class="text-indigo-600 text-xs font-bold hover:underline mt-2 uppercase tracking-widest">Términos y Privacidad (Ley 1581)</button>
+    <footer class="bg-white border-t py-8 mt-12 shadow-inner">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
+                <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
+                <button id="btn-legal" class="text-indigo-600 text-[10px] font-bold hover:underline mt-1 uppercase tracking-widest">Términos (Ley 1581)</button>
             </div>
-            <div class="flex items-center gap-3 bg-gray-50 px-6 py-3 rounded-full border border-gray-100">
+            <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border">
                 <span class="status-bullet bg-green-400"></span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ventas Totales:</span>
-                <span id="stats-count" class="text-xl font-extrabold text-indigo-600 tabular-nums">0</span>
+                <span class="text-[9px] font-bold text-gray-400 uppercase">Ventas:</span>
+                <span id="stats-count" class="text-lg font-black text-indigo-600">0</span>
             </div>
         </div>
     </footer>
 
-    <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+  <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
                 <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
@@ -153,15 +153,14 @@
             </div>
         </div>
     </div>
-
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-10 shadow-2xl">
-            <h3 class="text-2xl font-extrabold text-center mb-8 uppercase tracking-tighter">Acceso Admin</h3>
-            <form id="login-form" class="space-y-5">
-                <input type="email" id="login-email" placeholder="Correo" class="w-full p-4 border rounded-xl text-sm" required>
-                <input type="password" id="login-password" placeholder="Contraseña" class="w-full p-4 border rounded-xl text-sm" required>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-sm uppercase">Entrar</button>
-                <button type="button" id="close-login" class="w-full text-xs text-gray-400 font-bold uppercase mt-3">Cancelar</button>
+        <div class="bg-white w-full max-w-sm rounded-2xl p-8 shadow-2xl text-center">
+            <h3 class="text-lg font-bold mb-6 uppercase">Acceso Admin</h3>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="login-email" placeholder="Correo" class="w-full p-3 border rounded-xl text-xs" required>
+                <input type="password" id="login-password" placeholder="Contraseña" class="w-full p-3 border rounded-xl text-xs" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-xs">Entrar</button>
+                <button type="button" id="close-login" class="text-[10px] text-gray-400 font-bold uppercase mt-2">Cerrar</button>
             </form>
         </div>
     </div>
@@ -224,13 +223,13 @@
         const filter = document.getElementById('filter-category').value;
         const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
         document.getElementById('product-grid').innerHTML = filtered.map(p => `
-            <div class="product-card bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col">
+            <div class="product-card bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition flex flex-col">
                 <div class="product-image-container"><img src="${p.image}" loading="lazy"></div>
-                <div class="p-5">
-                    <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-1 h-10 leading-tight">${p.title}</h3>
-                    <p class="text-xl font-extrabold text-gray-950 mb-4">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-2.5 rounded-xl text-[11px] font-extrabold uppercase block hover:bg-green-600 transition">Contactar</a>
-                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[9px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
+                <div class="p-3">
+                    <p class="text-[13px] font-bold text-gray-950 mb-0.5">$${parseInt(p.price).toLocaleString('es-CO')}</p>
+                    <h3 class="text-[11px] font-medium text-gray-600 line-clamp-1 mb-3">${p.title}</h3>
+                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-2 rounded-lg text-[10px] font-bold uppercase block hover:bg-green-600 transition">Contactar</a>
+                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                 </div>
             </div>
         `).join('');
@@ -238,11 +237,11 @@
 
     function renderNews() {
         document.getElementById('news-feed').innerHTML = news.map(n => `
-            <div class="bg-white p-5 rounded-2xl border border-gray-100 relative">
+            <div class="bg-white p-4 rounded-xl border border-gray-100 relative">
                 <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                <h4 class="font-bold text-sm text-gray-950 mb-1">${n.title}</h4>
-                <p class="text-xs text-gray-600">${n.content}</p>
-                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
+                <h4 class="font-bold text-[11px] text-gray-950 mb-1 uppercase">${n.title}</h4>
+                <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
+                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
             </div>
         `).join('');
     }
@@ -251,16 +250,16 @@
         document.getElementById('event-list').innerHTML = events.map(e => {
             const date = new Date(e.eventDate + "T00:00:00");
             return `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 relative">
-                    <div class="bg-emerald-600 text-white min-w-[50px] h-[50px] rounded-xl flex flex-col items-center justify-center">
-                        <span class="text-lg font-bold leading-none">${date.getDate()}</span>
-                        <span class="text-[9px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
+                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative">
+                    <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
+                        <span class="text-sm font-bold leading-none">${date.getDate()}</span>
+                        <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
                     </div>
                     <div>
-                        <h4 class="font-bold text-xs text-gray-950 leading-tight">${e.name}</h4>
-                        <p class="text-[9px] font-bold text-emerald-700 uppercase mt-1">📍 ${e.location}</p>
+                        <h4 class="font-bold text-[10px] text-gray-950 leading-tight">${e.name}</h4>
+                        <p class="text-[8px] text-emerald-700 uppercase">📍 ${e.location}</p>
                     </div>
-                    ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
+                    ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
                 </div>
             `;
         }).join('');
