@@ -1,3 +1,6 @@
+Aquí tienes el código final limpio y optimizado. He ajustado el contenedor de imagen para que sea más bajo (200px), lo que hace que las tarjetas se vean más compactas y pequeñas en la cuadrícula, asegurando que las fotos (como la del iPhone vertical) se vean completas mediante object-fit: contain.
+
+HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,9 +11,26 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .product-image-container { position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden; background-color: #f3f4f6; }
-        .product-image-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .product-card:hover .product-image-container img { transform: scale(1.05); }
+        
+        /* Ajuste para imágenes completas y tarjetas más pequeñas */
+        .product-image-container { 
+            position: relative; 
+            width: 100%; 
+            height: 200px; 
+            overflow: hidden; 
+            background-color: #f9fafb; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .product-image-container img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+            transition: transform 0.3s ease; 
+        }
+        .product-card:hover img { transform: scale(1.05); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
@@ -80,7 +100,7 @@
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-12">
             <div class="xl:col-span-3">
                 <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-indigo-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Catálogo</h2></div>
-                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
             <div class="xl:col-span-1">
                 <div class="flex items-center gap-4 mb-8"><span class="status-bullet bg-orange-500"></span><h2 class="text-3xl font-extrabold text-gray-950 tracking-tighter">Anuncios</h2></div>
@@ -98,7 +118,7 @@
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="text-center md:text-left">
                 <p class="text-sm text-gray-500 font-medium">© 2026 Altamira Campestre.</p>
-                <button id="btn-legal" class="text-indigo-600 text-xs font-bold hover:underline mt-2 uppercase tracking-widest">Política de Privacidad y Términos</button>
+                <button id="btn-legal" class="text-indigo-600 text-xs font-bold hover:underline mt-2 uppercase tracking-widest">Política de Privacidad e Información</button>
             </div>
             <div class="flex items-center gap-3 bg-gray-50 px-6 py-3 rounded-full border border-gray-100">
                 <span class="status-bullet bg-green-400"></span>
@@ -114,22 +134,10 @@
                 <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Información Legal</h3>
                 <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
             </div>
-            <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-                <div>
-                    <h4 class="font-bold text-gray-900 uppercase text-xs mb-2">1. Uso del Sitio</h4>
-                    <p>Este Marketplace es exclusivo para residentes de Altamira Campestre. La administración no se hace responsable por la calidad de los productos o el cumplimiento de los pagos entre vecinos.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 uppercase text-xs mb-2">2. Privacidad de Datos</h4>
-                    <p>Al publicar un producto, su número de WhatsApp será visible para otros usuarios con el fin de facilitar la comunicación. No compartimos sus datos con terceros ajenos al conjunto.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 uppercase text-xs mb-2">3. Responsabilidad</h4>
-                    <p>Cada vendedor es responsable de la veracidad de su anuncio. Está prohibida la venta de artículos ilegales, armas o sustancias controladas dentro de la plataforma.</p>
-                </div>
-                <div class="bg-indigo-50 p-4 rounded-xl italic">
-                    "Fomentamos una convivencia basada en la confianza y el respeto mutuo entre vecinos."
-                </div>
+            <div class="space-y-4 text-sm text-gray-600">
+                <p><strong>1. Uso del Sitio:</strong> Exclusivo para residentes de Altamira Campestre.</p>
+                <p><strong>2. Privacidad:</strong> Su WhatsApp será visible para facilitar ventas.</p>
+                <p><strong>3. Responsabilidad:</strong> La administración no responde por transacciones privadas.</p>
             </div>
         </div>
     </div>
@@ -166,15 +174,12 @@
 
     let products = [], news = [], events = [], isAdmin = false;
 
-    // --- MODALES Y UI ---
     const toggleModal = (id, show) => document.getElementById(id).classList.toggle('hidden', !show);
-    
     document.getElementById('btn-legal').onclick = () => toggleModal('legal-modal', true);
     document.getElementById('close-legal').onclick = () => toggleModal('legal-modal', false);
     document.getElementById('admin-main-btn').onclick = () => toggleModal('login-modal', true);
     document.getElementById('close-login').onclick = () => toggleModal('login-modal', false);
 
-    // --- LÓGICA DE FIREBASE ---
     onAuthStateChanged(auth, (user) => {
         isAdmin = !!user;
         document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
@@ -203,18 +208,17 @@
         if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
     });
 
-    // --- RENDERIZADOS ---
     function renderProducts() {
         const filter = document.getElementById('filter-category').value;
         const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
         document.getElementById('product-grid').innerHTML = filtered.map(p => `
-            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col group">
+            <div class="product-card bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col">
                 <div class="product-image-container"><img src="${p.image}" loading="lazy"></div>
-                <div class="p-6">
-                    <h3 class="text-base font-semibold text-gray-900 line-clamp-2 mb-2 h-12 leading-tight">${p.title}</h3>
-                    <p class="text-2xl font-extrabold text-gray-950 mb-5">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-3 rounded-xl text-xs font-extrabold uppercase block hover:bg-green-600 transition">Contactar</a>
-                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[10px] font-bold uppercase mt-3 w-full">Gestionar</button>` : ''}
+                <div class="p-5">
+                    <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-1 h-10 leading-tight">${p.title}</h3>
+                    <p class="text-xl font-extrabold text-gray-950 mb-4">$${parseInt(p.price).toLocaleString('es-CO')}</p>
+                    <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-2.5 rounded-xl text-[11px] font-extrabold uppercase block hover:bg-green-600 transition">Contactar</a>
+                    ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[9px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                 </div>
             </div>
         `).join('');
@@ -222,11 +226,11 @@
 
     function renderNews() {
         document.getElementById('news-feed').innerHTML = news.map(n => `
-            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative group">
-                <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-400"></div>
-                <h4 class="font-bold text-base text-gray-950 leading-snug mb-2">${n.title}</h4>
-                <p class="text-sm text-gray-600 leading-relaxed">${n.content}</p>
-                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 text-xl font-bold">&times;</button>` : ''}
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 relative">
+                <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+                <h4 class="font-bold text-sm text-gray-950 mb-1">${n.title}</h4>
+                <p class="text-xs text-gray-600">${n.content}</p>
+                ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
             </div>
         `).join('');
     }
@@ -235,22 +239,21 @@
         document.getElementById('event-list').innerHTML = events.map(e => {
             const date = new Date(e.eventDate + "T00:00:00");
             return `
-                <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-5 relative group">
-                    <div class="bg-emerald-600 text-white min-w-[60px] h-[60px] rounded-2xl flex flex-col items-center justify-center">
-                        <span class="text-2xl font-extrabold leading-none">${date.getDate()}</span>
-                        <span class="text-[10px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 relative">
+                    <div class="bg-emerald-600 text-white min-w-[50px] h-[50px] rounded-xl flex flex-col items-center justify-center">
+                        <span class="text-lg font-bold leading-none">${date.getDate()}</span>
+                        <span class="text-[9px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-950 leading-tight">${e.name}</h4>
-                        <p class="text-[11px] font-semibold text-emerald-700 uppercase mt-1">📍 ${e.location}</p>
+                        <h4 class="font-bold text-xs text-gray-950 leading-tight">${e.name}</h4>
+                        <p class="text-[9px] font-bold text-emerald-700 uppercase mt-1">📍 ${e.location}</p>
                     </div>
-                    ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 text-xl font-bold">&times;</button>` : ''}
+                    ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-2 text-gray-300 hover:text-red-500 font-bold">&times;</button>` : ''}
                 </div>
             `;
         }).join('');
     }
 
-    // --- EVENTOS ADMIN ---
     window.adminDelete = async (id) => {
         const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
         if (r === "1") {
@@ -259,8 +262,8 @@
         } else if (r === "2") await deleteDoc(doc(db, "products", id));
     };
 
-    window.deleteNews = async (id) => { if(confirm("¿Eliminar anuncio?")) await deleteDoc(doc(db, "news", id)); };
-    window.deleteEvent = async (id) => { if(confirm("¿Eliminar evento?")) await deleteDoc(doc(db, "events", id)); };
+    window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
+    window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
     document.getElementById('product-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -312,7 +315,6 @@
     
     const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
     document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
-
 </script>
 </body>
 </html>
