@@ -128,28 +128,14 @@
                 <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
             </div>
             <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
-                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
-                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
-                </section>
+                <p>En cumplimiento de la Ley 1581 de 2012...</p>
                 <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
-                    "Fomentamos el Comercio seguro, la Economía Circular, la Confinza y el Respeto mutuo entre Vecinos."
+                    "Fomentamos el Comercio seguro entre Vecinos."
                 </div>
             </div>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, increment, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -246,7 +232,7 @@
                 <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
                     <div class="product-image-container">
                         <img src="${p.image}" loading="lazy">
-                        <span class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-[9px] font-bold text-gray-500 shadow-sm">${dateStr}</span>
+                        <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
                     <div class="p-3 flex flex-col flex-grow">
                         <h3 class="text-[12px] font-medium text-gray-500 line-clamp-1 mb-0.5">${p.title}</h3>
@@ -262,7 +248,6 @@
             document.getElementById('news-feed').innerHTML = news.map(n => {
                 const dateObj = n.date ? new Date(n.date) : new Date();
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-                
                 return `
                     <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
                         <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
