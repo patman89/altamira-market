@@ -10,8 +10,10 @@
         body { font-family: 'Inter', sans-serif; }
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; }
         .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        /* Estilo para imagen de anuncios */
-        .news-image { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        
+        /* Ajuste para que la imagen de anuncio se vea TODA */
+        .news-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
+        
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     </style>
@@ -40,6 +42,18 @@
             </div>
         </div>
     </nav>
+
+    <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-xs rounded-2xl p-6 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-center">Acceso Administrativo</h3>
+            <input type="email" id="login-email" placeholder="Correo" class="w-full p-2 border rounded-lg mb-3 text-sm">
+            <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-2 border rounded-lg mb-4 text-sm">
+            <div class="flex gap-2">
+                <button id="btn-cancel-login" class="flex-1 py-2 text-xs font-bold text-gray-500 uppercase">Cancelar</button>
+                <button id="btn-do-login" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold uppercase">Entrar</button>
+            </div>
+        </div>
+    </div>
 
     <main class="container mx-auto px-4 py-6 flex-grow">
         <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-10">
@@ -115,20 +129,9 @@
                 <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
             </div>
             <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
-                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos.</p>
-                </section>
+                <p>En cumplimiento de la Ley 1581 de 2012...</p>
                 <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
-                    "Fomentamos el Comercio seguro, la Economía Circular, la Confinza y el Respeto mutuo entre Vecinos."
+                    "Fomentamos el Comercio seguro entre Vecinos."
                 </div>
             </div>
         </div>
@@ -157,8 +160,21 @@
         // MODALES
         document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
         document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+        
+        // GESTIÓN DE LOGIN MODAL
+        const loginModal = document.getElementById('login-modal');
+        document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
+        document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
+        
+        document.getElementById('btn-do-login').onclick = async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                loginModal.classList.add('hidden');
+            } catch (e) { alert("Credenciales incorrectas"); }
+        };
 
-        // FUNCIÓN CLAVE: COMPRESIÓN DE IMAGEN
         const compressImage = (file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -169,20 +185,11 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const MAX_WIDTH = 800;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
+                        let width = img.width, height = img.height;
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Calidad al 70% (0.7)
                         resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
@@ -198,7 +205,6 @@
 
         const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
 
-        // LISTENERS FIRESTORE
         onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts();
@@ -255,10 +261,7 @@
                             <span class="text-sm font-bold leading-none">${date.getDate()}</span>
                             <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-[10px] text-gray-950 leading-tight">${e.name}</h4>
-                            <p class="text-[8px] text-emerald-700 uppercase">📍 ${e.location}</p>
-                        </div>
+                        <div><h4 class="font-bold text-[10px] text-gray-950 leading-tight">${e.name}</h4><p class="text-[8px] text-emerald-700 uppercase">📍 ${e.location}</p></div>
                         ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
                     </div>
                 `;
@@ -275,14 +278,11 @@
         window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
         window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
-        // PRODUCT FORM CON COMPRESIÓN
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('image');
             if(!fileInput.files[0]) return;
-            
             const compressedBase64 = await compressImage(fileInput.files[0]);
-            
             await addDoc(collection(db, "products"), {
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
@@ -294,16 +294,10 @@
             e.target.reset();
         };
 
-        // NEWS FORM CON COMPRESIÓN OPCIONAL
         document.getElementById('news-form').onsubmit = async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('news-image-input');
-            let imgData = null;
-
-            if(fileInput.files[0]) {
-                imgData = await compressImage(fileInput.files[0]);
-            }
-
+            let imgData = fileInput.files[0] ? await compressImage(fileInput.files[0]) : null;
             await addDoc(collection(db, "news"), {
                 title: document.getElementById('news-title').value,
                 content: document.getElementById('news-content').value,
@@ -323,14 +317,8 @@
             e.target.reset();
         };
 
-        document.getElementById('admin-main-btn').onclick = () => {
-            const email = prompt("Admin Email:");
-            const pass = prompt("Password:");
-            if(email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert("Acceso denegado"));
-        };
         document.getElementById('btn-logout').onclick = () => signOut(auth);
         document.getElementById('filter-category').onchange = renderProducts;
-        
         const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
         document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
     </script>
