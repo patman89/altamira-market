@@ -7,30 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        /* Aumentamos la base del texto para legibilidad */
-        body { font-family: 'Inter', sans-serif; font-size: 18px; }
+        body { font-family: 'Inter', sans-serif; }
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
         .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .news-media { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; background: #f3f4f6; }
+        .news-media { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
         .hidden { display: none !important; }
-        .status-bullet { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; outline: none; }
-        /* Ajuste para inputs en móviles para evitar zoom automático */
-        input, select, textarea { font-size: 16px !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
 
-    <nav class="bg-white border-b sticky top-0 z-50 py-4 shadow-sm">
+    <nav class="bg-white border-b sticky top-0 z-50 py-3 shadow-sm">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2.5 rounded-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                 </div>
-                <h1 class="text-2xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
+                <h1 class="text-xl font-extrabold tracking-tighter text-gray-950">Altamira<span class="text-indigo-600">Market</span></h1>
             </div>
-            <div class="flex items-center gap-4">
-                <select id="filter-category" class="bg-gray-100 border-none text-base rounded-full px-6 py-3 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
+            <div class="flex items-center gap-3">
+                <select id="filter-category" class="bg-gray-100 border-none text-xs rounded-full px-4 py-2 outline-none font-medium text-gray-700 cursor-pointer focus:ring-2 focus:ring-indigo-300">
                     <option value="All">Todas las categorías</option>
                     <option value="Tecnología">Tecnología</option>
                     <option value="Vehículos">Vehículos</option>
@@ -39,130 +36,125 @@
                     <option value="Servicios">Servicios</option>
                     <option value="Otros">Otros</option>
                 </select>
-                <button id="admin-main-btn" class="bg-gray-950 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-gray-800 transition uppercase">Admin</button>
+                <button id="admin-main-btn" class="bg-gray-950 text-white px-5 py-2 rounded-full text-xs font-semibold hover:bg-gray-800 transition">Admin</button>
             </div>
         </div>
     </nav>
 
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
-        <button class="absolute top-5 right-5 text-white text-5xl font-light">&times;</button>
+        <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
         <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()"></div>
-        <h3 id="zoom-title" class="text-white mt-6 font-bold text-2xl text-center px-4"></h3>
+        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
     </div>
 
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-8 shadow-2xl">
-            <h3 class="text-xl font-bold mb-6 text-center">Acceso Administrativo</h3>
-            <input type="email" id="login-email" placeholder="Correo" class="w-full p-4 border rounded-xl mb-4 text-base">
-            <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-4 border rounded-xl mb-6 text-base">
-            <div class="flex gap-4">
-                <button id="btn-cancel-login" class="flex-1 py-3 text-sm font-bold text-gray-500 uppercase">Cancelar</button>
-                <button id="btn-do-login" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl text-sm font-bold uppercase shadow-lg">Entrar</button>
+        <div class="bg-white w-full max-w-xs rounded-2xl p-6 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-center">Acceso Administrativo</h3>
+            <input type="email" id="login-email" placeholder="Correo" class="w-full p-2 border rounded-lg mb-3 text-sm">
+            <input type="password" id="login-pass" placeholder="Contraseña" class="w-full p-2 border rounded-lg mb-4 text-sm">
+            <div class="flex gap-2">
+                <button id="btn-cancel-login" class="flex-1 py-2 text-xs font-bold text-gray-500 uppercase">Cancelar</button>
+                <button id="btn-do-login" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold uppercase">Entrar</button>
             </div>
         </div>
     </div>
 
-    <main class="container mx-auto px-4 py-8 flex-grow">
-        <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-12">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b">
-                <div class="flex items-center gap-3">
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        <section id="admin-panel" class="hidden bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-10">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <div class="flex items-center gap-2">
                     <span class="status-bullet bg-indigo-500 animate-pulse"></span>
-                    <h2 class="text-lg font-bold text-gray-950 uppercase tracking-wide">Centro de Control</h2>
+                    <h2 class="text-sm font-bold text-gray-950 uppercase tracking-tight">Centro de Control</h2>
                 </div>
-                <button id="btn-logout" class="text-red-500 text-sm font-bold uppercase hover:underline">Cerrar Sesión</button>
+                <button id="btn-logout" class="text-red-500 text-[10px] font-bold uppercase">Cerrar Sesión</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <form id="product-form" class="space-y-4 p-5 bg-gray-50 rounded-2xl">
-                    <p class="text-xs font-black text-indigo-700 uppercase tracking-widest">Nuevo Producto</p>
-                    <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-3 border rounded-xl text-base" required>
-                    <select id="category" class="w-full p-3 border rounded-xl text-base" required></select>
-                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-3 border rounded-xl text-base" required>
-                    <input type="text" id="contact" placeholder="WhatsApp (Ej: 57300...)" class="w-full p-3 border rounded-xl text-base" required>
-                    <input type="file" id="image" accept="image/*" class="text-sm w-full font-medium" required>
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-sm uppercase shadow-md">Publicar Ahora</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <form id="product-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-indigo-700 uppercase">Nuevo Producto</p>
+                    <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <select id="category" class="w-full p-2.5 border rounded-lg text-xs" required></select>
+                    <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="contact" placeholder="WhatsApp" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="file" id="image" accept="image/*" class="text-[10px] w-full" required>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold text-xs">Publicar</button>
                 </form>
                 
-                <form id="news-form" class="space-y-4 p-5 bg-gray-50 rounded-2xl">
-                    <p class="text-xs font-black text-orange-700 uppercase tracking-widest">Nuevo Anuncio</p>
-                    <input type="text" id="news-title" placeholder="Título" class="w-full p-3 border rounded-xl text-base" required>
-                    <textarea id="news-content" placeholder="Mensaje..." class="w-full p-3 border rounded-xl text-base h-24" required></textarea>
-                    <input type="file" id="news-image-input" accept="image/*,video/*" class="text-sm w-full font-medium">
-                    <button type="submit" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold text-sm uppercase shadow-md">Enviar Anuncio</button>
+                <form id="news-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-orange-700 uppercase">Nuevo Anuncio</p>
+                    <input type="text" id="news-title" placeholder="Título" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <textarea id="news-content" placeholder="Mensaje..." class="w-full p-2.5 border rounded-lg text-xs h-20" required></textarea>
+                    <input type="file" id="news-image-input" accept="image/*,video/*" class="text-[10px] w-full">
+                    <button type="submit" class="w-full bg-orange-500 text-white py-2.5 rounded-lg font-bold text-xs">Enviar</button>
                 </form>
 
-                <form id="event-form" class="space-y-4 p-5 bg-gray-50 rounded-2xl">
-                    <p class="text-xs font-black text-emerald-700 uppercase tracking-widest">Nuevo Evento</p>
-                    <input type="text" id="event-name" placeholder="Nombre del evento" class="w-full p-3 border rounded-xl text-base" required>
-                    <input type="date" id="event-date" class="w-full p-3 border rounded-xl text-base" required>
-                    <input type="text" id="event-location" placeholder="Lugar o Salón" class="w-full p-3 border rounded-xl text-base" required>
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold text-sm uppercase shadow-md">Agendar Evento</button>
+                <form id="event-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <p class="text-[10px] font-bold text-emerald-700 uppercase">Nuevo Evento</p>
+                    <input type="text" id="event-name" placeholder="Proximos Eventos" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="date" id="event-date" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-xs">Agendar</button>
                 </form>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-3">
-                <div class="flex items-center gap-3 mb-8">
-                    <span class="status-bullet bg-indigo-500"></span>
-                    <h2 class="text-2xl font-bold text-gray-950">Catálogo de Productos</h2>
-                </div>
-                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-indigo-500"></span><h2 class="text-xl font-bold text-gray-950">Catálogo</h2></div>
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4"></div>
             </div>
             
-            <aside class="lg:col-span-1 space-y-16">
+            <aside class="lg:col-span-1 space-y-12">
                 <div>
-                    <div class="flex items-center gap-3 mb-8">
-                        <span class="status-bullet bg-orange-500"></span>
-                        <h2 class="text-2xl font-bold text-gray-950">Anuncios</h2>
-                    </div>
-                    <div id="news-feed" class="space-y-6"></div>
+                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-orange-500"></span><h2 class="text-xl font-bold text-gray-950">Anuncios</h2></div>
+                    <div id="news-feed" class="space-y-4"></div>
                 </div>
                 <div>
-                    <div class="flex items-center gap-3 mb-8">
-                        <span class="status-bullet bg-emerald-500"></span>
-                        <h2 class="text-2xl font-bold text-gray-950">Eventos</h2>
-                    </div>
-                    <div id="event-list" class="space-y-6"></div>
+                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Proximos Eventos</h2></div>
+                    <div id="event-list" class="space-y-4"></div>
                 </div>
             </aside>
         </div>
     </main>
 
-    <footer class="bg-white border-t py-12 mt-16 shadow-inner">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+    <footer class="bg-white border-t py-8 mt-12 shadow-inner">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div>
-                <p class="text-base text-gray-600">© 2026 Altamira Campestre. Todos los derechos reservados.</p>
-                <button id="btn-legal" class="text-indigo-600 text-sm font-bold hover:underline mt-2 uppercase tracking-widest">Políticas de Privacidad y Términos</button>
+                <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
+                <button id="btn-legal" class="text-indigo-600 text-[10px] font-bold hover:underline mt-1 uppercase tracking-widest">Políticas & Privacidad</button>
             </div>
-            <div class="flex items-center gap-4 bg-gray-50 px-6 py-4 rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border">
                 <span class="status-bullet bg-green-400"></span>
-                <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Ventas Logradas:</span>
-                <span id="stats-count" class="text-3xl font-black text-indigo-600">0</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Ventas Totales:</span>
+                <span id="stats-count" class="text-lg font-black text-indigo-600">0</span>
             </div>
         </div>
     </footer>
 
     <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-3xl rounded-3xl p-10 shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-8 border-b pb-6">
-                <h3 class="text-2xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
-                <button id="close-legal" class="text-gray-400 text-4xl hover:text-gray-950">&times;</button>
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
+                <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
             </div>
-            <div class="space-y-8 text-base text-gray-700 leading-relaxed text-justify">
+            <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
                 <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-3 text-lg">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012, informamos que sus datos se usan exclusivamente para el contacto comercial entre residentes.</p>
+                    <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
+                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
                 </section>
                 <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-3 text-lg">2. Autorización</h4>
-                    <p>Al publicar, usted acepta que su número de WhatsApp sea público para facilitar la comunicación con los compradores.</p>
+                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
+                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
                 </section>
-                <section class="bg-red-50 p-6 rounded-2xl border-l-8 border-red-500">
-                    <h4 class="font-bold text-red-700 uppercase mb-3 text-lg">3. EXONERACIÓN DE RESPONSABILIDAD</h4>
-                    <p class="font-medium">La Administración NO responde por la calidad, garantías o legalidad de los productos. Los tratos son directos entre vecinos.</p>
+                <section>
+                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
+                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
                 </section>
-                <div class="bg-indigo-50 p-6 rounded-2xl border-l-8 border-indigo-600 italic font-bold text-indigo-900 text-lg">
-                    "Fomentamos el comercio seguro y el respeto mutuo."
+                <section>
+                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
+                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
+                </section>
+                <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
+                    "Fomentamos el comercio seguro, la economía circular, la confianza y el respeto mutuo entre Vecinos."
                 </div>
             </div>
         </div>
@@ -194,9 +186,9 @@
             const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
             
             if(isVideo) {
-                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[70vh] shadow-2xl rounded-xl"></video>`;
+                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
             } else {
-                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[70vh] shadow-2xl rounded-xl">`;
+                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
             }
             document.getElementById('zoom-title').innerText = title;
             zoomModal.classList.remove('hidden');
@@ -228,7 +220,10 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    if (file.type.startsWith('video/')) { resolve(event.target.result); return; }
+                    if (file.type.startsWith('video/')) {
+                        resolve(event.target.result);
+                        return;
+                    }
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = () => {
@@ -281,16 +276,16 @@
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
 
                 return `
-                <div class="product-card bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col">
+                <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
                     <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
                         <img src="${p.image}" loading="lazy">
-                        <span class="absolute bottom-3 left-3 bg-gray-900/60 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold text-white shadow-sm">${dateStr}</span>
+                        <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
-                    <div class="p-5 flex flex-col flex-grow">
-                        <h3 class="text-base font-semibold text-gray-500 line-clamp-2 mb-2 leading-tight">${p.title}</h3>
-                        <p class="text-2xl font-black text-gray-950 mb-5">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                        <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-4 rounded-xl text-base font-black block hover:bg-green-600 transition shadow-md uppercase">Contactar</a>
-                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-xs font-bold uppercase mt-4 w-full tracking-widest">Borrar / Vendido</button>` : ''}
+                    <div class="p-3 flex flex-col flex-grow">
+                        <h3 class="text-[12px] font-medium text-gray-500 line-clamp-1 mb-0.5">${p.title}</h3>
+                        <p class="text-[15px] font-bold text-gray-950 mb-3">$${parseInt(p.price).toLocaleString('es-CO')}</p>
+                        <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block hover:bg-green-600 transition">WhatsApp</a>
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                     </div>
                 </div>
             `}).join('');
@@ -299,23 +294,26 @@
         function renderNews() {
             document.getElementById('news-feed').innerHTML = news.map(n => {
                 const dateObj = n.date ? new Date(n.date) : new Date();
-                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
                 let mediaTag = '';
                 if(n.image) {
                     const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
-                    mediaTag = isVideo ? `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>` 
-                                       : `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
+                    if(isVideo) {
+                        mediaTag = `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`;
+                    } else {
+                        mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
+                    }
                 }
                 return `
-                    <div class="bg-white p-6 rounded-2xl border-2 border-orange-50 relative shadow-sm mb-6">
-                        <div class="absolute top-0 left-0 w-1.5 h-full bg-orange-400"></div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
                         ${mediaTag}
-                        <div class="flex justify-between items-start gap-3 mb-3">
-                            <h4 class="font-black text-base text-gray-950 uppercase leading-tight">${n.title}</h4>
-                            <span class="text-xs text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
+                        <div class="flex justify-between items-start gap-2 mb-1">
+                            <h4 class="font-bold text-[11px] text-gray-950 uppercase">${n.title}</h4>
+                            <span class="text-[8px] text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
                         </div>
-                        <p class="text-base text-gray-600 leading-normal">${n.content}</p>
-                        ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute -top-3 -right-3 text-white bg-red-500 rounded-full w-8 h-8 font-bold flex items-center justify-center shadow-lg">&times;</button>` : ''}
+                        <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
+                        ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold bg-white/80 rounded-full px-1">&times;</button>` : ''}
                     </div>
                 `;
             }).join('');
@@ -325,35 +323,33 @@
             document.getElementById('event-list').innerHTML = events.map(e => {
                 const date = new Date(e.eventDate + "T00:00:00");
                 return `
-                    <div class="bg-white p-5 rounded-2xl border-2 border-emerald-50 flex items-center gap-5 relative shadow-sm">
-                        <div class="bg-emerald-600 text-white min-w-[60px] h-[60px] rounded-xl flex flex-col items-center justify-center shadow-inner">
-                            <span class="text-xl font-black leading-none">${date.getDate()}</span>
-                            <span class="text-[10px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
+                    <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm">
+                        <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
+                            <span class="text-sm font-bold leading-none">${date.getDate()}</span>
+                            <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
                         </div>
                         <div class="overflow-hidden">
-                            <h4 class="font-black text-base text-gray-950 leading-tight mb-1">${e.name}</h4>
-                            <p class="text-sm text-emerald-700 font-bold uppercase truncate">📍 ${e.location}</p>
+                            <h4 class="font-bold text-[10px] text-gray-950 leading-tight truncate">${e.name}</h4>
+                            <p class="text-[8px] text-emerald-700 uppercase truncate">📍 ${e.location}</p>
                         </div>
-                        ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute -top-2 -right-2 text-white bg-red-400 rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">&times;</button>` : ''}
+                        ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
                     </div>
                 `;
             }).join('');
         }
 
         window.adminDelete = async (id) => {
-            const r = prompt("Escriba: 1 (VENDIDO) | 2 (ELIMINAR) | 3 (CANCELAR)");
+            const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
             if (r === "1") {
                 await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
                 await deleteDoc(doc(db, "products", id));
             } else if (r === "2") await deleteDoc(doc(db, "products", id));
         };
-        window.deleteNews = async (id) => { if(confirm("¿Eliminar este anuncio?")) await deleteDoc(doc(db, "news", id)); };
-        window.deleteEvent = async (id) => { if(confirm("¿Eliminar este evento?")) await deleteDoc(doc(db, "events", id)); };
+        window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
+        window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerText = "Publicando..."; btn.disabled = true;
             const fileInput = document.getElementById('image');
             if(!fileInput.files[0]) return;
             const compressedBase64 = await compressImage(fileInput.files[0]);
@@ -365,7 +361,7 @@
                 image: compressedBase64,
                 date: Date.now()
             });
-            e.target.reset(); btn.innerText = "Publicar Ahora"; btn.disabled = false;
+            e.target.reset();
         };
 
         document.getElementById('news-form').onsubmit = async (e) => {
