@@ -10,12 +10,13 @@
         body { font-family: 'Inter', sans-serif; }
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
         .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        /* Ajuste para que el video o imagen de anuncios se vea bien */
         .news-media { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         
-        /* Estilos para el Zoom */
-        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px; }
+        /* Estilos para el Zoom mejorado */
+        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; outline: none; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
@@ -45,7 +46,7 @@
 
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
         <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
-        <div id="zoom-content" class="flex flex-col items-center">
+        <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()">
             </div>
         <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
     </div>
@@ -83,10 +84,10 @@
                 </form>
                 
                 <form id="news-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
-                    <p class="text-[10px] font-bold text-orange-700 uppercase">Nuevo Anuncio (Img/Video)</p>
+                    <p class="text-[10px] font-bold text-orange-700 uppercase">Nuevo Anuncio</p>
                     <input type="text" id="news-title" placeholder="Título" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <textarea id="news-content" placeholder="Mensaje..." class="w-full p-2.5 border rounded-lg text-xs h-20" required></textarea>
-                    <input type="file" id="news-media-input" accept="image/*,video/*" class="text-[10px] w-full">
+                    <input type="file" id="news-image-input" accept="image/*,video/*" class="text-[10px] w-full">
                     <button type="submit" class="w-full bg-orange-500 text-white py-2.5 rounded-lg font-bold text-xs">Enviar</button>
                 </form>
 
@@ -171,58 +172,72 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
-        // --- FUNCIÓN DE ZOOM MEJORADA PARA VIDEO ---
-        window.openZoom = (src, title, type = 'image') => {
+        // FUNCIÓN DE ZOOM GLOBAL MEJORADA
+        window.openZoom = (src, title) => {
             const zoomModal = document.getElementById('zoom-modal');
             const zoomContent = document.getElementById('zoom-content');
-            const zoomTitle = document.getElementById('zoom-title');
             
-            zoomTitle.innerText = title;
+            // Detectar si es video revisando el formato base64 o la extensión
+            const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
             
-            if (type === 'video') {
-                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="rounded-lg shadow-2xl" onclick="event.stopPropagation()"></video>`;
+            if(isVideo) {
+                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
             } else {
-                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" onclick="event.stopPropagation()">`;
+                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
             }
             
+            document.getElementById('zoom-title').innerText = title;
             zoomModal.classList.remove('hidden');
         };
 
+        // Función para cerrar zoom y detener videos
         window.closeZoom = () => {
-            const zoomModal = document.getElementById('zoom-modal');
-            const zoomContent = document.getElementById('zoom-content');
-            zoomContent.innerHTML = ""; // Limpiar para detener videos en reproducción
-            zoomModal.classList.add('hidden');
+            document.getElementById('zoom-modal').classList.add('hidden');
+            document.getElementById('zoom-content').innerHTML = ""; // Limpia el video para que deje de sonar
         };
 
-        // Procesamiento de archivos (Imagen comprimida o Video en Base64)
-        const processFile = (file) => {
+        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
+        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+        
+        const loginModal = document.getElementById('login-modal');
+        document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
+        document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
+        
+        document.getElementById('btn-do-login').onclick = async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                loginModal.classList.add('hidden');
+            } catch (e) { alert("Credenciales incorrectas"); }
+        };
+
+        const compressImage = (file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    if (file.type.startsWith('image/')) {
-                        const img = new Image();
-                        img.src = event.target.result;
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const MAX_WIDTH = 800;
-                            let width = img.width, height = img.height;
-                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                            canvas.width = width; canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-                            resolve({ data: canvas.toDataURL('image/jpeg', 0.7), type: 'image' });
-                        };
-                    } else {
-                        // Para videos, enviamos el base64 directo (Nota: Base64 tiene limites de tamaño en Firestore)
-                        resolve({ data: event.target.result, type: 'video' });
+                    // Si es video, no lo procesamos con Canvas, lo devolvemos tal cual (Base64)
+                    if (file.type.startsWith('video/')) {
+                        resolve(event.target.result);
+                        return;
                     }
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        let width = img.width, height = img.height;
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
                 };
             });
         };
 
-        // El resto de la lógica de Firebase se mantiene igual
         onAuthStateChanged(auth, (user) => {
             isAdmin = !!user;
             document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
@@ -257,9 +272,10 @@
             document.getElementById('product-grid').innerHTML = filtered.map(p => {
                 const dateObj = p.date ? new Date(p.date) : new Date();
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+
                 return `
                 <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
-                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}', 'image')">
+                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
                         <img src="${p.image}" loading="lazy">
                         <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
@@ -269,8 +285,8 @@
                         <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold uppercase block hover:bg-green-600 transition">WhatsApp</a>
                         ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            `}).join('');
         }
 
         function renderNews() {
@@ -278,25 +294,29 @@
                 const dateObj = n.date ? new Date(n.date) : new Date();
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
                 
-                // Lógica para decidir si mostrar IMG o VIDEO
-                let mediaHtml = "";
-                if (n.mediaType === 'video') {
-                    mediaHtml = `<video src="${n.image}" class="news-media cursor-pointer" controls muted onclick="window.openZoom('${n.image}', '${n.title}', 'video')"></video>`;
-                } else if (n.image) {
-                    mediaHtml = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}', 'image')" loading="lazy">`;
+                // DETECCIÓN DE CONTENIDO PARA ANUNCIOS
+                let mediaTag = '';
+                if(n.image) {
+                    const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
+                    if(isVideo) {
+                        mediaTag = `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`;
+                    } else {
+                        mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
+                    }
                 }
 
                 return `
                     <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
                         <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                        ${mediaHtml}
+                        ${mediaTag}
                         <div class="flex justify-between items-start gap-2 mb-1">
                             <h4 class="font-bold text-[11px] text-gray-950 uppercase">${n.title}</h4>
                             <span class="text-[8px] text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
                         </div>
                         <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
                         ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold bg-white/80 rounded-full px-1">&times;</button>` : ''}
-                    </div>`;
+                    </div>
+                `;
             }).join('');
         }
 
@@ -314,22 +334,32 @@
                             <p class="text-[8px] text-emerald-700 uppercase truncate">📍 ${e.location}</p>
                         </div>
                         ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
-                    </div>`;
+                    </div>
+                `;
             }).join('');
         }
 
-        // --- HANDLERS DE FORMULARIOS ---
+        window.adminDelete = async (id) => {
+            const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
+            if (r === "1") {
+                await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
+                await deleteDoc(doc(db, "products", id));
+            } else if (r === "2") await deleteDoc(doc(db, "products", id));
+        };
+        window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
+        window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
+
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('image');
             if(!fileInput.files[0]) return;
-            const processed = await processFile(fileInput.files[0]);
+            const compressedBase64 = await compressImage(fileInput.files[0]);
             await addDoc(collection(db, "products"), {
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
                 price: document.getElementById('price').value,
                 contact: document.getElementById('contact').value,
-                image: processed.data,
+                image: compressedBase64,
                 date: Date.now()
             });
             e.target.reset();
@@ -337,20 +367,17 @@
 
         document.getElementById('news-form').onsubmit = async (e) => {
             e.preventDefault();
-            const fileInput = document.getElementById('news-media-input');
-            let mediaObj = fileInput.files[0] ? await processFile(fileInput.files[0]) : { data: null, type: 'image' };
-            
+            const fileInput = document.getElementById('news-image-input');
+            let imgData = fileInput.files[0] ? await compressImage(fileInput.files[0]) : null;
             await addDoc(collection(db, "news"), {
                 title: document.getElementById('news-title').value,
                 content: document.getElementById('news-content').value,
-                image: mediaObj.data,
-                mediaType: mediaObj.type,
+                image: imgData,
                 date: Date.now()
             });
             e.target.reset();
         };
 
-        // ... Otros Event Listeners existentes ...
         document.getElementById('event-form').onsubmit = async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "events"), {
@@ -362,26 +389,6 @@
         };
 
         document.getElementById('btn-logout').onclick = () => signOut(auth);
-        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
-        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
-        document.getElementById('admin-main-btn').onclick = () => document.getElementById('login-modal').classList.remove('hidden');
-        document.getElementById('btn-cancel-login').onclick = () => document.getElementById('login-modal').classList.add('hidden');
-        document.getElementById('btn-do-login').onclick = async () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); document.getElementById('login-modal').classList.add('hidden'); } catch (e) { alert("Error"); }
-        };
-
-        window.adminDelete = async (id) => {
-            const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
-            if (r === "1") {
-                await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
-                await deleteDoc(doc(db, "products", id));
-            } else if (r === "2") await deleteDoc(doc(db, "products", id));
-        };
-        window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
-        window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
-        
         document.getElementById('filter-category').onchange = renderProducts;
         const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
         document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
