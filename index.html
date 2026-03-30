@@ -46,8 +46,7 @@
 
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
         <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
-        <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()">
-            </div>
+        <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()"></div>
         <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
     </div>
 
@@ -134,7 +133,7 @@
         </div>
     </footer>
 
-  <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+    <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b pb-4">
                 <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
@@ -184,12 +183,9 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
-        // FUNCIÓN DE ZOOM GLOBAL MEJORADA
         window.openZoom = (src, title) => {
             const zoomModal = document.getElementById('zoom-modal');
             const zoomContent = document.getElementById('zoom-content');
-            
-            // Detectar si es video revisando el formato base64 o la extensión
             const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
             
             if(isVideo) {
@@ -197,15 +193,13 @@
             } else {
                 zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
             }
-            
             document.getElementById('zoom-title').innerText = title;
             zoomModal.classList.remove('hidden');
         };
 
-        // Función para cerrar zoom y detener videos
         window.closeZoom = () => {
             document.getElementById('zoom-modal').classList.add('hidden');
-            document.getElementById('zoom-content').innerHTML = ""; // Limpia el video para que deje de sonar
+            document.getElementById('zoom-content').innerHTML = "";
         };
 
         document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
@@ -229,7 +223,6 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    // Si es video, no lo procesamos con Canvas, lo devolvemos tal cual (Base64)
                     if (file.type.startsWith('video/')) {
                         resolve(event.target.result);
                         return;
@@ -305,8 +298,6 @@
             document.getElementById('news-feed').innerHTML = news.map(n => {
                 const dateObj = n.date ? new Date(n.date) : new Date();
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-                
-                // DETECCIÓN DE CONTENIDO PARA ANUNCIOS
                 let mediaTag = '';
                 if(n.image) {
                     const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
@@ -316,7 +307,6 @@
                         mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
                     }
                 }
-
                 return `
                     <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
                         <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
