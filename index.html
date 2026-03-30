@@ -8,11 +8,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; }
+        .product-image-container { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background-color: #f9fafb; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
         .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
         .news-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        
+        /* Estilos para el Zoom */
+        #zoom-modal img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
@@ -39,6 +42,12 @@
             </div>
         </div>
     </nav>
+
+    <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="this.classList.add('hidden')">
+        <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
+        <img id="zoom-img" src="" alt="Zoom" onclick="event.stopPropagation()">
+        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
+    </div>
 
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-xs rounded-2xl p-6 shadow-2xl">
@@ -171,6 +180,14 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
+        // Función de Zoom Global
+        window.openZoom = (imgSrc, title) => {
+            const zoomModal = document.getElementById('zoom-modal');
+            document.getElementById('zoom-img').src = imgSrc;
+            document.getElementById('zoom-title').innerText = title;
+            zoomModal.classList.remove('hidden');
+        };
+
         document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
         document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
         
@@ -245,7 +262,7 @@
 
                 return `
                 <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
-                    <div class="product-image-container">
+                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
                         <img src="${p.image}" loading="lazy">
                         <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
@@ -266,7 +283,7 @@
                 return `
                     <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
                         <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                        ${n.image ? `<img src="${n.image}" class="news-image" loading="lazy">` : ''}
+                        ${n.image ? `<img src="${n.image}" class="news-image cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">` : ''}
                         <div class="flex justify-between items-start gap-2 mb-1">
                             <h4 class="font-bold text-[11px] text-gray-950 uppercase">${n.title}</h4>
                             <span class="text-[8px] text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
