@@ -13,7 +13,9 @@
         .news-media { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 70vh; object-fit: contain; border-radius: 8px; outline: none; }
+        
+        /* Ajustes Modal Zoom */
+        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 75vh; object-fit: contain; border-radius: 12px; }
         
         .hero-section {
             position: relative; height: 400px; overflow: hidden; display: flex;
@@ -64,12 +66,11 @@
     </header>
 
     <div id="zoom-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
-        <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
-        <div id="zoom-content" class="flex flex-col items-center justify-center w-full max-w-4xl" onclick="event.stopPropagation()">
-            </div>
-        <div id="zoom-info" class="text-white mt-6 text-center max-w-xl">
-            <h3 id="zoom-title" class="font-bold text-2xl mb-2"></h3>
-            <p id="zoom-desc" class="text-gray-300 text-lg"></p>
+        <button class="absolute top-5 right-5 text-white text-4xl font-light hover:scale-110 transition">&times;</button>
+        <div id="zoom-content" class="flex flex-col items-center justify-center w-full max-w-4xl" onclick="event.stopPropagation()"></div>
+        <div class="text-center mt-6 px-4">
+            <h3 id="zoom-title" class="text-white font-bold text-2xl mb-1"></h3>
+            <p id="zoom-extra" class="text-indigo-400 font-medium text-lg"></p>
         </div>
     </div>
 
@@ -173,65 +174,42 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
-        // FUNCIÓN MAXIMIZAR REHECHA
-        window.openZoom = (src, title, desc = "") => {
-            const zoomModal = document.getElementById('zoom-modal');
-            const zoomContent = document.getElementById('zoom-content');
-            const zoomTitle = document.getElementById('zoom-title');
-            const zoomDesc = document.getElementById('zoom-desc');
+        // LÓGICA DE MAXIMIZAR UNIFICADA
+        window.openZoom = (src, title, extra = "") => {
+            const modal = document.getElementById('zoom-modal');
+            const content = document.getElementById('zoom-content');
+            const zTitle = document.getElementById('zoom-title');
+            const zExtra = document.getElementById('zoom-extra');
 
-            zoomContent.innerHTML = "";
-            zoomTitle.innerText = title;
-            zoomDesc.innerText = desc;
+            content.innerHTML = ""; 
+            zTitle.innerText = title;
+            zExtra.innerText = extra;
 
-            if (src) {
+            if (!src) {
+                // Si no hay imagen (es un evento), mostrar icono
+                content.innerHTML = `
+                    <div class="bg-emerald-600 p-10 rounded-full shadow-2xl mb-4">
+                        <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>`;
+            } else {
                 const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
                 if (isVideo) {
-                    zoomContent.innerHTML = `<video src="${src}" controls autoplay class="shadow-2xl"></video>`;
+                    content.innerHTML = `<video src="${src}" controls autoplay class="shadow-2xl"></video>`;
                 } else {
-                    zoomContent.innerHTML = `<img src="${src}" class="shadow-2xl">`;
+                    content.innerHTML = `<img src="${src}" class="shadow-2xl">`;
                 }
-            } else {
-                // Caso eventos: Mostrar un icono grande
-                zoomContent.innerHTML = `
-                    <div class="bg-emerald-600 p-8 rounded-full mb-4">
-                        <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>`;
             }
-
-            zoomModal.classList.remove('hidden');
+            modal.classList.remove('hidden');
         };
 
-        window.closeZoom = () => document.getElementById('zoom-modal').classList.add('hidden');
-
-        const loginModal = document.getElementById('login-modal');
-        document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
-        document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
-        document.getElementById('btn-do-login').onclick = async () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); loginModal.classList.add('hidden'); } 
-            catch (e) { alert("Error"); }
+        window.closeZoom = () => {
+            document.getElementById('zoom-modal').classList.add('hidden');
+            document.getElementById('zoom-content').innerHTML = "";
         };
 
-        const compressImage = (file) => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    if (file.type.startsWith('video/')) return resolve(e.target.result);
-                    const img = new Image(); img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = 800; canvas.height = (img.height * 800) / img.width;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
-            });
-        };
-
+        // Firebase Auth & Listeners
         onAuthStateChanged(auth, (user) => {
             isAdmin = !!user;
             document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
@@ -241,24 +219,25 @@
 
         const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
 
-        onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
+        onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), snap => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderProducts();
         });
-        onSnapshot(query(collection(db, "news"), orderBy("date", "desc")), (snap) => {
+        onSnapshot(query(collection(db, "news"), orderBy("date", "desc")), snap => {
             news = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderNews();
         });
-        onSnapshot(query(collection(db, "events"), orderBy("eventDate", "asc")), (snap) => {
+        onSnapshot(query(collection(db, "events"), orderBy("eventDate", "asc")), snap => {
             events = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderEvents();
         });
-        onSnapshot(doc(db, "stats", "global"), (d) => {
+        onSnapshot(doc(db, "stats", "global"), d => {
             if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
         });
 
+        // Renderizadores
         function renderProducts() {
             const filter = document.getElementById('filter-category').value;
             const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
             document.getElementById('product-grid').innerHTML = filtered.map(p => `
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col">
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col hover:shadow-lg transition">
                     <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}', '$${parseInt(p.price).toLocaleString()}')">
                         <img src="${p.image}">
                     </div>
@@ -277,7 +256,7 @@
                     ${n.image ? `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}', '${n.content}')">` : ''}
                     <h4 class="font-bold text-[11px] uppercase">${n.title}</h4>
                     <p class="text-[10px] text-gray-500">${n.content}</p>
-                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300">&times;</button>` : ''}
+                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 px-2">&times;</button>` : ''}
                 </div>`).join('');
         }
 
@@ -286,11 +265,9 @@
                 const date = new Date(e.eventDate + "T00:00:00");
                 const day = date.getDate();
                 const month = date.toLocaleString('es-CO', {month: 'short'}).toUpperCase();
-                const fullDate = date.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
-                
                 return `
-                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-pointer hover:bg-gray-50" 
-                     onclick="window.openZoom('', '${e.name}', '📅 ${fullDate} \\n 📍 ${e.location}')">
+                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-pointer hover:bg-gray-50 transition" 
+                     onclick="window.openZoom('', '${e.name}', '📅 ${date.toLocaleDateString()} | 📍 ${e.location}')">
                     <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
                         <span class="text-sm font-bold leading-none">${day}</span>
                         <span class="text-[8px] font-bold">${month}</span>
@@ -299,10 +276,37 @@
                         <h4 class="font-bold text-[10px] truncate uppercase">${e.name}</h4>
                         <p class="text-[8px] text-emerald-700 truncate">📍 ${e.location}</p>
                     </div>
-                    ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300">&times;</button>` : ''}
+                    ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 px-2">&times;</button>` : ''}
                 </div>`;
             }).join('');
         }
+
+        // Funciones Auxiliares e Interacción (Login, Borrar, Forms)
+        const loginModal = document.getElementById('login-modal');
+        document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
+        document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
+        document.getElementById('btn-do-login').onclick = async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); loginModal.classList.add('hidden'); } catch (e) { alert("Error"); }
+        };
+
+        const compressImage = (file) => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    if (file.type.startsWith('video/')) return resolve(e.target.result);
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 800; canvas.height = (img.height * 800) / img.width;
+                        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                };
+            });
+        };
 
         window.adminDelete = async (id) => {
             const r = prompt("1. VENDIDO | 2. ELIMINAR");
@@ -321,8 +325,7 @@
                 price: document.getElementById('price').value,
                 contact: document.getElementById('contact').value,
                 image: img, date: Date.now()
-            });
-            e.target.reset();
+            }); e.target.reset();
         };
 
         document.getElementById('news-form').onsubmit = async (e) => {
@@ -332,8 +335,7 @@
                 title: document.getElementById('news-title').value,
                 content: document.getElementById('news-content').value,
                 image: img, date: Date.now()
-            });
-            e.target.reset();
+            }); e.target.reset();
         };
 
         document.getElementById('event-form').onsubmit = async (e) => {
@@ -342,8 +344,7 @@
                 name: document.getElementById('event-name').value,
                 eventDate: document.getElementById('event-date').value,
                 location: document.getElementById('event-location').value
-            });
-            e.target.reset();
+            }); e.target.reset();
         };
 
         document.getElementById('btn-logout').onclick = () => signOut(auth);
