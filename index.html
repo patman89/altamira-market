@@ -13,29 +13,18 @@
         .news-media { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; background: #f3f4f6; }
         .hidden { display: none !important; }
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; outline: none; }
+        #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 70vh; object-fit: contain; border-radius: 8px; outline: none; }
         
-        /* Estilos para la imagen de presentación */
         .hero-section {
-            position: relative;
-            height: 400px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            margin-bottom: 2rem;
+            position: relative; height: 400px; overflow: hidden; display: flex;
+            align-items: center; justify-content: center; color: white;
+            text-align: center; margin-bottom: 2rem;
         }
         .hero-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('img/campestre.png'); /* Imagen conjunto residencial */
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.6);
-            z-index: -1;
-            transition: transform 0.5s ease;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('img/campestre.png');
+            background-size: cover; background-position: center;
+            filter: brightness(0.6); z-index: -1; transition: transform 0.5s ease;
         }
         .hero-section:hover .hero-bg { transform: scale(1.05); }
     </style>
@@ -69,15 +58,19 @@
         <div class="hero-bg"></div>
         <div class="container mx-auto px-4 relative z-10">
             <h2 class="text-4xl md:text-5xl font-black mb-4 tracking-tighter">Bienvenido a Altamira Campestre</h2>
-            <p class="text-lg md:text-xl font-medium text-gray-200 mb-8 max-w-2xl mx-auto">El mercado exclusivo para nuestra comunidad. Compra, vende y entérate de lo que pasa en tu conjunto.</p>
+            <p class="text-lg md:text-xl font-medium text-gray-200 mb-8 max-w-2xl mx-auto">El mercado exclusivo para nuestra comunidad.</p>
             <a href="#catalog-start" class="bg-white text-indigo-600 px-8 py-3 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-indigo-50 transition shadow-lg">Explorar Catálogo</a>
         </div>
     </header>
 
-    <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
+    <div id="zoom-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
         <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
-        <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()"></div>
-        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg text-center px-4"></h3>
+        <div id="zoom-content" class="flex flex-col items-center justify-center w-full max-w-4xl" onclick="event.stopPropagation()">
+            </div>
+        <div id="zoom-info" class="text-white mt-6 text-center max-w-xl">
+            <h3 id="zoom-title" class="font-bold text-2xl mb-2"></h3>
+            <p id="zoom-desc" class="text-gray-300 text-lg"></p>
+        </div>
     </div>
 
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
@@ -151,47 +144,14 @@
 
     <footer class="bg-white border-t py-8 mt-12 shadow-inner">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div>
-                <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
-                <button id="btn-legal" class="text-indigo-600 text-[10px] font-bold hover:underline mt-1 uppercase tracking-widest">Políticas & Privacidad</button>
-            </div>
+            <p class="text-xs text-gray-500">© 2026 Altamira Campestre.</p>
             <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border">
                 <span class="status-bullet bg-green-400"></span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase">Ventas Totales:</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Ventas:</span>
                 <span id="stats-count" class="text-lg font-black text-indigo-600">0</span>
             </div>
         </div>
     </footer>
-
-    <div id="legal-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h3 class="text-xl font-extrabold text-gray-950 uppercase tracking-tighter">Aviso Legal y Privacidad</h3>
-                <button id="close-legal" class="text-gray-400 text-2xl">&times;</button>
-            </div>
-            <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
-                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
-                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
-                </section>
-                <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
-                    "Fomentamos el comercio seguro, la economía circular, la confianza y el respeto mutuo entre Vecinos."
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -213,71 +173,59 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
-        window.openZoom = (src, title) => {
+        // FUNCIÓN MAXIMIZAR REHECHA
+        window.openZoom = (src, title, desc = "") => {
             const zoomModal = document.getElementById('zoom-modal');
             const zoomContent = document.getElementById('zoom-content');
-            
-            if(!src) {
-                // Caso especial para eventos sin imagen
-                zoomContent.innerHTML = `<div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-lg">
-                    <div class="text-emerald-600 mb-4 flex justify-center">
-                        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <p class="text-gray-600 text-sm font-medium uppercase tracking-widest">Información del Evento</p>
-                </div>`;
-            } else {
+            const zoomTitle = document.getElementById('zoom-title');
+            const zoomDesc = document.getElementById('zoom-desc');
+
+            zoomContent.innerHTML = "";
+            zoomTitle.innerText = title;
+            zoomDesc.innerText = desc;
+
+            if (src) {
                 const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
-                if(isVideo) {
-                    zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
+                if (isVideo) {
+                    zoomContent.innerHTML = `<video src="${src}" controls autoplay class="shadow-2xl"></video>`;
                 } else {
-                    zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
+                    zoomContent.innerHTML = `<img src="${src}" class="shadow-2xl">`;
                 }
+            } else {
+                // Caso eventos: Mostrar un icono grande
+                zoomContent.innerHTML = `
+                    <div class="bg-emerald-600 p-8 rounded-full mb-4">
+                        <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>`;
             }
-            
-            document.getElementById('zoom-title').innerText = title;
+
             zoomModal.classList.remove('hidden');
         };
 
-        window.closeZoom = () => {
-            document.getElementById('zoom-modal').classList.add('hidden');
-            document.getElementById('zoom-content').innerHTML = "";
-        };
+        window.closeZoom = () => document.getElementById('zoom-modal').classList.add('hidden');
 
-        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
-        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
-        
         const loginModal = document.getElementById('login-modal');
         document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
         document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
-        
         document.getElementById('btn-do-login').onclick = async () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                loginModal.classList.add('hidden');
-            } catch (e) { alert("Credenciales incorrectas"); }
+            try { await signInWithEmailAndPassword(auth, email, pass); loginModal.classList.add('hidden'); } 
+            catch (e) { alert("Error"); }
         };
 
         const compressImage = (file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    if (file.type.startsWith('video/')) {
-                        resolve(event.target.result);
-                        return;
-                    }
-                    const img = new Image();
-                    img.src = event.target.result;
+                reader.onload = (e) => {
+                    if (file.type.startsWith('video/')) return resolve(e.target.result);
+                    const img = new Image(); img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800;
-                        let width = img.width, height = img.height;
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.width = 800; canvas.height = (img.height * 800) / img.width;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
@@ -294,20 +242,14 @@
         const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
 
         onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
-            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderProducts();
+            products = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderProducts();
         });
-
         onSnapshot(query(collection(db, "news"), orderBy("date", "desc")), (snap) => {
-            news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderNews();
+            news = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderNews();
         });
-
         onSnapshot(query(collection(db, "events"), orderBy("eventDate", "asc")), (snap) => {
-            events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderEvents();
+            events = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderEvents();
         });
-
         onSnapshot(doc(db, "stats", "global"), (d) => {
             if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
         });
@@ -315,111 +257,81 @@
         function renderProducts() {
             const filter = document.getElementById('filter-category').value;
             const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
-            document.getElementById('product-grid').innerHTML = filtered.map(p => {
-                const dateObj = p.date ? new Date(p.date) : new Date();
-                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
-
-                return `
-                <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
-                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
-                        <img src="${p.image}" loading="lazy">
-                        <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
+            document.getElementById('product-grid').innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col">
+                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}', '$${parseInt(p.price).toLocaleString()}')">
+                        <img src="${p.image}">
                     </div>
-                    <div class="p-3 flex flex-col flex-grow">
-                        <h3 class="text-[12px] font-medium text-gray-500 line-clamp-1 mb-0.5">${p.title}</h3>
-                        <p class="text-[15px] font-bold text-gray-950 mb-3">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                        <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block hover:bg-green-600 transition">WhatsApp</a>
-                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
+                    <div class="p-3">
+                        <h3 class="text-[12px] font-medium text-gray-500 truncate">${p.title}</h3>
+                        <p class="text-[15px] font-bold mb-3">$${parseInt(p.price).toLocaleString()}</p>
+                        <a href="https://wa.me/${p.contact}" target="_blank" class="bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block">WhatsApp</a>
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] mt-2 w-full font-bold">GESTIONAR</button>` : ''}
                     </div>
-                </div>
-            `}).join('');
+                </div>`).join('');
         }
 
         function renderNews() {
-            document.getElementById('news-feed').innerHTML = news.map(n => {
-                const dateObj = n.date ? new Date(n.date) : new Date();
-                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-                let mediaTag = '';
-                if(n.image) {
-                    const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
-                    if(isVideo) {
-                        mediaTag = `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`;
-                    } else {
-                        mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
-                    }
-                }
-                return `
-                    <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                        ${mediaTag}
-                        <div class="flex justify-between items-start gap-2 mb-1">
-                            <h4 class="font-bold text-[11px] text-gray-950 uppercase">${n.title}</h4>
-                            <span class="text-[8px] text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
-                        ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold bg-white/80 rounded-full px-1">&times;</button>` : ''}
-                    </div>
-                `;
-            }).join('');
+            document.getElementById('news-feed').innerHTML = news.map(n => `
+                <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm">
+                    ${n.image ? `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}', '${n.content}')">` : ''}
+                    <h4 class="font-bold text-[11px] uppercase">${n.title}</h4>
+                    <p class="text-[10px] text-gray-500">${n.content}</p>
+                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300">&times;</button>` : ''}
+                </div>`).join('');
         }
 
         function renderEvents() {
             document.getElementById('event-list').innerHTML = events.map(e => {
                 const date = new Date(e.eventDate + "T00:00:00");
-                const formattedDate = date.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
-                const zoomText = `${e.name.toUpperCase()} \n 📅 ${formattedDate} \n 📍 ${e.location}`;
-
+                const day = date.getDate();
+                const month = date.toLocaleString('es-CO', {month: 'short'}).toUpperCase();
+                const fullDate = date.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+                
                 return `
-                    <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-pointer hover:bg-gray-50 transition" onclick="window.openZoom('', '${zoomText}')">
-                        <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
-                            <span class="text-sm font-bold leading-none">${date.getDate()}</span>
-                            <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
-                        </div>
-                        <div class="overflow-hidden">
-                            <h4 class="font-bold text-[10px] text-gray-950 leading-tight truncate">${e.name}</h4>
-                            <p class="text-[8px] text-emerald-700 uppercase truncate">📍 ${e.location}</p>
-                        </div>
-                        ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold hover:text-red-500">&times;</button>` : ''}
+                <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-pointer hover:bg-gray-50" 
+                     onclick="window.openZoom('', '${e.name}', '📅 ${fullDate} \\n 📍 ${e.location}')">
+                    <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
+                        <span class="text-sm font-bold leading-none">${day}</span>
+                        <span class="text-[8px] font-bold">${month}</span>
                     </div>
-                `;
+                    <div class="overflow-hidden">
+                        <h4 class="font-bold text-[10px] truncate uppercase">${e.name}</h4>
+                        <p class="text-[8px] text-emerald-700 truncate">📍 ${e.location}</p>
+                    </div>
+                    ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300">&times;</button>` : ''}
+                </div>`;
             }).join('');
         }
 
         window.adminDelete = async (id) => {
-            const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
-            if (r === "1") {
-                await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true });
-                await deleteDoc(doc(db, "products", id));
-            } else if (r === "2") await deleteDoc(doc(db, "products", id));
+            const r = prompt("1. VENDIDO | 2. ELIMINAR");
+            if (r === "1") { await setDoc(doc(db, "stats", "global"), { salesCount: increment(1) }, { merge: true }); await deleteDoc(doc(db, "products", id)); }
+            else if (r === "2") await deleteDoc(doc(db, "products", id));
         };
         window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
         window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
-            const fileInput = document.getElementById('image');
-            if(!fileInput.files[0]) return;
-            const compressedBase64 = await compressImage(fileInput.files[0]);
+            const img = await compressImage(document.getElementById('image').files[0]);
             await addDoc(collection(db, "products"), {
                 title: document.getElementById('title').value,
                 category: document.getElementById('category').value,
                 price: document.getElementById('price').value,
                 contact: document.getElementById('contact').value,
-                image: compressedBase64,
-                date: Date.now()
+                image: img, date: Date.now()
             });
             e.target.reset();
         };
 
         document.getElementById('news-form').onsubmit = async (e) => {
             e.preventDefault();
-            const fileInput = document.getElementById('news-image-input');
-            let imgData = fileInput.files[0] ? await compressImage(fileInput.files[0]) : null;
+            let img = document.getElementById('news-image-input').files[0] ? await compressImage(document.getElementById('news-image-input').files[0]) : null;
             await addDoc(collection(db, "news"), {
                 title: document.getElementById('news-title').value,
                 content: document.getElementById('news-content').value,
-                image: imgData,
-                date: Date.now()
+                image: img, date: Date.now()
             });
             e.target.reset();
         };
