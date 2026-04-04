@@ -15,7 +15,6 @@
         .status-bullet { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         #zoom-modal img, #zoom-modal video { max-width: 95vw; max-height: 80vh; object-fit: contain; border-radius: 8px; outline: none; }
         
-        /* Estilos para la imagen de presentación */
         .hero-section {
             position: relative;
             height: 400px;
@@ -30,7 +29,7 @@
         .hero-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('img/campestre.png'); /* Imagen conjunto residencial */
+            background-image: url('img/campestre.png');
             background-size: cover;
             background-position: center;
             filter: brightness(0.6);
@@ -76,8 +75,9 @@
 
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
         <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
-        <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()"></div>
-        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
+        <div id="zoom-content" class="flex flex-col items-center justify-center w-full max-w-4xl" onclick="event.stopPropagation()"></div>
+        <h3 id="zoom-title" class="text-white mt-4 font-bold text-xl text-center"></h3>
+        <p id="zoom-extra" class="text-indigo-400 mt-2 font-medium"></p>
     </div>
 
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
@@ -122,7 +122,7 @@
 
                 <form id="event-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
                     <p class="text-[10px] font-bold text-emerald-700 uppercase">Nuevo Evento</p>
-                    <input type="text" id="event-name" placeholder="Proximos Eventos" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="event-name" placeholder="Nombre del Evento" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <input type="date" id="event-date" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <input type="text" id="event-location" placeholder="Lugar" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-xs">Agendar</button>
@@ -142,7 +142,7 @@
                     <div id="news-feed" class="space-y-4"></div>
                 </div>
                 <div>
-                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Proximos Eventos</h2></div>
+                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Próximos Eventos</h2></div>
                     <div id="event-list" class="space-y-4"></div>
                 </div>
             </aside>
@@ -180,11 +180,7 @@
                 </section>
                 <section>
                     <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
-                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
+                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos.</p>
                 </section>
                 <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
                     "Fomentamos el comercio seguro, la economía circular, la confianza y el respeto mutuo entre Vecinos."
@@ -213,21 +209,35 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
-        window.openZoom = (src, title) => {
+        // Función de Zoom Mejorada
+        window.openZoom = (src, title, extra = "") => {
             const zoomModal = document.getElementById('zoom-modal');
             const zoomContent = document.getElementById('zoom-content');
+            const zoomExtra = document.getElementById('zoom-extra');
             
-            // Verificamos si src es un string válido antes de procesar
-            if (!src) return;
-
-            const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
-            
-            if(isVideo) {
-                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
+            // Si no hay src (es un evento), mostramos un diseño de tarjeta grande
+            if(!src || src === 'null') {
+                zoomContent.innerHTML = `
+                    <div class="bg-white p-10 rounded-3xl text-center shadow-2xl border-t-8 border-emerald-500 w-full">
+                        <div class="text-emerald-600 mb-4">
+                            <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h2 class="text-4xl font-black text-gray-900 mb-2">${title}</h2>
+                        <p class="text-2xl text-emerald-700 font-bold uppercase tracking-widest">${extra}</p>
+                    </div>
+                `;
+                zoomExtra.innerText = "";
             } else {
-                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
+                const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
+                if(isVideo) {
+                    zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
+                } else {
+                    zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
+                }
+                zoomExtra.innerText = extra;
             }
-            document.getElementById('zoom-title').innerText = title;
+            
+            document.getElementById('zoom-title').innerText = src ? title : "";
             zoomModal.classList.remove('hidden');
         };
 
@@ -236,9 +246,9 @@
             document.getElementById('zoom-content').innerHTML = "";
         };
 
+        // Handlers de UI
         document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
         document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
-        
         const loginModal = document.getElementById('login-modal');
         document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
         document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
@@ -257,10 +267,7 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    if (file.type.startsWith('video/')) {
-                        resolve(event.target.result);
-                        return;
-                    }
+                    if (file.type.startsWith('video/')) { resolve(event.target.result); return; }
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = () => {
@@ -311,10 +318,9 @@
             document.getElementById('product-grid').innerHTML = filtered.map(p => {
                 const dateObj = p.date ? new Date(p.date) : new Date();
                 const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
-
                 return `
                 <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
-                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
+                    <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}', '$${parseInt(p.price).toLocaleString('es-CO')}')">
                         <img src="${p.image}" loading="lazy">
                         <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
@@ -324,8 +330,8 @@
                         <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block hover:bg-green-600 transition">WhatsApp</a>
                         ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
                     </div>
-                </div>
-            `}).join('');
+                </div>`;
+            }).join('');
         }
 
         function renderNews() {
@@ -335,11 +341,9 @@
                 let mediaTag = '';
                 if(n.image) {
                     const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
-                    if(isVideo) {
-                        mediaTag = `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`;
-                    } else {
-                        mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
-                    }
+                    mediaTag = isVideo 
+                        ? `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`
+                        : `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
                 }
                 return `
                     <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
@@ -351,19 +355,18 @@
                         </div>
                         <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
                         ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold bg-white/80 rounded-full px-1">&times;</button>` : ''}
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
         function renderEvents() {
             document.getElementById('event-list').innerHTML = events.map(e => {
                 const date = new Date(e.eventDate + "T00:00:00");
-                const fullDate = date.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
-                // Usamos openZoom pero pasando el nombre y lugar como texto
+                const fullDateStr = date.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+                // Se añade cursor-pointer y onclick para maximizar el evento
                 return `
-                    <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-zoom-in hover:bg-gray-50 transition" 
-                         onclick="window.openZoom('', '${e.name} - ${fullDate} en ${e.location}')">
+                    <div class="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 relative shadow-sm cursor-pointer hover:border-emerald-300 transition" 
+                         onclick="window.openZoom(null, '${e.name}', '📍 ${e.location} — ${fullDateStr}')">
                         <div class="bg-emerald-600 text-white min-w-[40px] h-[40px] rounded-lg flex flex-col items-center justify-center">
                             <span class="text-sm font-bold leading-none">${date.getDate()}</span>
                             <span class="text-[8px] font-bold uppercase">${date.toLocaleString('es-CO', {month: 'short'}).replace('.','')}</span>
@@ -372,9 +375,8 @@
                             <h4 class="font-bold text-[10px] text-gray-950 leading-tight truncate">${e.name}</h4>
                             <p class="text-[8px] text-emerald-700 uppercase truncate">📍 ${e.location}</p>
                         </div>
-                        ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
-                    </div>
-                `;
+                        ${isAdmin ? `<button onclick="event.stopPropagation(); window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold hover:text-red-500">&times;</button>` : ''}
+                    </div>`;
             }).join('');
         }
 
@@ -386,7 +388,7 @@
             } else if (r === "2") await deleteDoc(doc(db, "products", id));
         };
         window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
-        window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
+        window.deleteEvent = async (id) => { if(confirm("¿Eliminar evento?")) await deleteDoc(doc(db, "events", id)); };
 
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
