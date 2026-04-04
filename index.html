@@ -38,6 +38,23 @@
             transition: transform 0.5s ease;
         }
         .hero-section:hover .hero-bg { transform: scale(1.05); }
+
+        /* INTERACCIÓN: Maximizar Próximos Eventos al pasar el mouse */
+        #event-list > div {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            z-index: 1;
+        }
+        #event-list > div:hover {
+            transform: scale(1.08); /* Efecto maximizado */
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
+            border-color: #10b981; /* Resalte color emerald */
+            z-index: 10;
+            background-color: #f0fdf4; /* Fondo verde muy sutil */
+        }
+        #event-list > div:hover h4 {
+            color: #064e3b;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
