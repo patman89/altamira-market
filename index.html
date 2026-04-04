@@ -30,7 +30,7 @@
         .hero-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('img/campestre.png'); /* Imagen conjunto residencial */
+            background-image: url('img/campestre.png'); /* Asegúrate que la ruta sea correcta */
             background-size: cover;
             background-position: center;
             filter: brightness(0.6);
@@ -46,15 +46,13 @@
             z-index: 1;
         }
         #event-list > div:hover {
-            transform: scale(1.08); /* Efecto maximizado */
+            transform: scale(1.08); 
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
-            border-color: #10b981; /* Resalte color emerald */
+            border-color: #10b981; 
             z-index: 10;
-            background-color: #f0fdf4; /* Fondo verde muy sutil */
+            background-color: #f0fdf4; 
         }
-        #event-list > div:hover h4 {
-            color: #064e3b;
-        }
+        #event-list > div:hover h4 { color: #064e3b; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen antialiased">
@@ -94,7 +92,7 @@
     <div id="zoom-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] flex flex-col items-center justify-center p-4 hidden" onclick="window.closeZoom()">
         <button class="absolute top-5 right-5 text-white text-4xl font-light">&times;</button>
         <div id="zoom-content" class="flex flex-col items-center justify-center w-full" onclick="event.stopPropagation()"></div>
-        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg"></h3>
+        <h3 id="zoom-title" class="text-white mt-4 font-bold text-lg text-center"></h3>
     </div>
 
     <div id="login-modal" class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
@@ -124,7 +122,7 @@
                     <input type="text" id="title" placeholder="¿Qué vendes?" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <select id="category" class="w-full p-2.5 border rounded-lg text-xs" required></select>
                     <input type="number" id="price" placeholder="Precio (COP)" class="w-full p-2.5 border rounded-lg text-xs" required>
-                    <input type="text" id="contact" placeholder="WhatsApp" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="contact" placeholder="WhatsApp (Ej: 57300...)" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <input type="file" id="image" accept="image/*" class="text-[10px] w-full" required>
                     <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-bold text-xs">Publicar</button>
                 </form>
@@ -139,9 +137,9 @@
 
                 <form id="event-form" class="space-y-3 p-4 bg-gray-50 rounded-xl">
                     <p class="text-[10px] font-bold text-emerald-700 uppercase">Nuevo Evento</p>
-                    <input type="text" id="event-name" placeholder="Proximos Eventos" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="event-name" placeholder="Nombre del Evento" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <input type="date" id="event-date" class="w-full p-2.5 border rounded-lg text-xs" required>
-                    <input type="text" id="event-location" placeholder="Lugar" class="w-full p-2.5 border rounded-lg text-xs" required>
+                    <input type="text" id="event-location" placeholder="Lugar (Ej: Salón Social)" class="w-full p-2.5 border rounded-lg text-xs" required>
                     <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold text-xs">Agendar</button>
                 </form>
             </div>
@@ -159,7 +157,7 @@
                     <div id="news-feed" class="space-y-4"></div>
                 </div>
                 <div>
-                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Proximos Eventos</h2></div>
+                    <div class="flex items-center gap-3 mb-6"><span class="status-bullet bg-emerald-500"></span><h2 class="text-xl font-bold text-gray-950">Eventos</h2></div>
                     <div id="event-list" class="space-y-4"></div>
                 </div>
             </aside>
@@ -189,22 +187,14 @@
             <div class="space-y-5 text-xs text-gray-600 leading-relaxed text-justify">
                 <section>
                     <h4 class="font-bold text-gray-900 uppercase mb-2">1. Protección de Datos (Ley 1581 de 2012)</h4>
-                    <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
+                    <p>En cumplimiento de la Ley 1581 de 2012, se informa que los datos personales suministrados son tratados únicamente para facilitar el contacto comercial entre residentes del conjunto Altamira Campestre.</p>
                 </section>
                 <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">2. Autorización del Titular</h4>
-                    <p>Al publicar, el usuario autoriza que su número de WhatsApp sea visible. El usuario puede solicitar actualizar, rectificar o eliminar sus datos de su propia publicación.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-red-600 uppercase mb-2">3. Exoneración de Responsabilidad y Garantías</h4>
-                    <p><strong>La Administración del Conjunto Altamira Campestre NO se hace responsable</strong> por las transacciones comerciales, la calidad, el estado, la procedencia o las <strong>garantías</strong> de los productos y servicios ofrecidos. El sitio actúa solo como un tablero informativo; cualquier reclamo debe dirigirse directamente al vendedor.</p>
-                </section>
-                <section>
-                    <h4 class="font-bold text-gray-900 uppercase mb-2">4. Restricciones</h4>
-                    <p>Prohibida la oferta de artículos ilícitos o servicios que vulneren la ley colombiana. La administración se reserva el derecho de eliminar cualquier publicación inapropiada.</p>
+                    <h4 class="font-bold text-red-600 uppercase mb-2">2. Exoneración de Responsabilidad</h4>
+                    <p><strong>La Administración NO se hace responsable</strong> por las transacciones comerciales ni la calidad de los productos. El sitio actúa solo como un tablero informativo.</p>
                 </section>
                 <div class="bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600 italic font-medium">
-                    "Fomentamos el comercio seguro, la economía circular, la confianza y el respeto mutuo entre Vecinos."
+                    "Fomentamos el comercio seguro y el respeto mutuo entre Vecinos."
                 </div>
             </div>
         </div>
@@ -230,16 +220,16 @@
 
         let products = [], news = [], events = [], isAdmin = false;
 
+        // --- Funciones Globales ---
         window.openZoom = (src, title) => {
             const zoomModal = document.getElementById('zoom-modal');
             const zoomContent = document.getElementById('zoom-content');
             const isVideo = src.includes("data:video") || src.match(/\.(mp4|webm|ogg|mov)$/i);
             
-            if(isVideo) {
-                zoomContent.innerHTML = `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`;
-            } else {
-                zoomContent.innerHTML = `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
-            }
+            zoomContent.innerHTML = isVideo 
+                ? `<video src="${src}" controls autoplay class="w-full h-auto max-h-[80vh] shadow-2xl"></video>`
+                : `<img src="${src}" alt="Zoom" class="w-full h-auto max-h-[80vh] shadow-2xl">`;
+            
             document.getElementById('zoom-title').innerText = title;
             zoomModal.classList.remove('hidden');
         };
@@ -249,31 +239,33 @@
             document.getElementById('zoom-content').innerHTML = "";
         };
 
-        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
-        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
-        
-        const loginModal = document.getElementById('login-modal');
-        document.getElementById('admin-main-btn').onclick = () => loginModal.classList.remove('hidden');
-        document.getElementById('btn-cancel-login').onclick = () => loginModal.classList.add('hidden');
-        
+        // --- Auth ---
+        onAuthStateChanged(auth, (user) => {
+            isAdmin = !!user;
+            document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
+            document.getElementById('admin-main-btn').classList.toggle('hidden', isAdmin);
+            renderAll();
+        });
+
+        document.getElementById('admin-main-btn').onclick = () => document.getElementById('login-modal').classList.remove('hidden');
+        document.getElementById('btn-cancel-login').onclick = () => document.getElementById('login-modal').classList.add('hidden');
         document.getElementById('btn-do-login').onclick = async () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-                loginModal.classList.add('hidden');
+                document.getElementById('login-modal').classList.add('hidden');
             } catch (e) { alert("Credenciales incorrectas"); }
         };
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
 
+        // --- Utilidades ---
         const compressImage = (file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    if (file.type.startsWith('video/')) {
-                        resolve(event.target.result);
-                        return;
-                    }
+                    if (file.type.startsWith('video/')) { resolve(event.target.result); return; }
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = () => {
@@ -290,15 +282,7 @@
             });
         };
 
-        onAuthStateChanged(auth, (user) => {
-            isAdmin = !!user;
-            document.getElementById('admin-panel').classList.toggle('hidden', !isAdmin);
-            document.getElementById('admin-main-btn').classList.toggle('hidden', isAdmin);
-            renderAll();
-        });
-
-        const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
-
+        // --- Data Listeners ---
         onSnapshot(query(collection(db, "products"), orderBy("date", "desc")), (snap) => {
             products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts();
@@ -318,55 +302,35 @@
             if(d.exists()) document.getElementById('stats-count').innerText = d.data().salesCount || 0;
         });
 
+        // --- Renders ---
         function renderProducts() {
             const filter = document.getElementById('filter-category').value;
             const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
-            document.getElementById('product-grid').innerHTML = filtered.map(p => {
-                const dateObj = p.date ? new Date(p.date) : new Date();
-                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
-
-                return `
-                <div class="product-card bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
+            document.getElementById('product-grid').innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col">
                     <div class="product-image-container" onclick="window.openZoom('${p.image}', '${p.title}')">
                         <img src="${p.image}" loading="lazy">
-                        <span class="absolute bottom-2 left-2 bg-gray-900/40 backdrop-blur-sm px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm">${dateStr}</span>
                     </div>
                     <div class="p-3 flex flex-col flex-grow">
                         <h3 class="text-[12px] font-medium text-gray-500 line-clamp-1 mb-0.5">${p.title}</h3>
                         <p class="text-[15px] font-bold text-gray-950 mb-3">$${parseInt(p.price).toLocaleString('es-CO')}</p>
-                        <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block hover:bg-green-600 transition">WhatsApp</a>
-                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2 w-full">Gestionar</button>` : ''}
+                        <a href="https://wa.me/${p.contact}" target="_blank" class="mt-auto bg-green-500 text-white text-center py-2 rounded-lg text-[11px] font-bold block">WhatsApp</a>
+                        ${isAdmin ? `<button onclick="window.adminDelete('${p.id}')" class="text-red-500 text-[8px] font-bold uppercase mt-2">Gestionar</button>` : ''}
                     </div>
                 </div>
-            `}).join('');
+            `).join('');
         }
 
         function renderNews() {
-            document.getElementById('news-feed').innerHTML = news.map(n => {
-                const dateObj = n.date ? new Date(n.date) : new Date();
-                const dateStr = dateObj.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-                let mediaTag = '';
-                if(n.image) {
-                    const isVideo = n.image.includes("data:video") || n.image.match(/\.(mp4|webm|ogg|mov)$/i);
-                    if(isVideo) {
-                        mediaTag = `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>`;
-                    } else {
-                        mediaTag = `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')" loading="lazy">`;
-                    }
-                }
-                return `
-                    <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
-                        ${mediaTag}
-                        <div class="flex justify-between items-start gap-2 mb-1">
-                            <h4 class="font-bold text-[11px] text-gray-950 uppercase">${n.title}</h4>
-                            <span class="text-[8px] text-gray-400 font-bold whitespace-nowrap">${dateStr}</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
-                        ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold bg-white/80 rounded-full px-1">&times;</button>` : ''}
-                    </div>
-                `;
-            }).join('');
+            document.getElementById('news-feed').innerHTML = news.map(n => `
+                <div class="bg-white p-4 rounded-xl border border-gray-100 relative shadow-sm mb-4">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+                    ${n.image ? (n.image.includes("data:video") ? `<video src="${n.image}" class="news-media cursor-pointer" muted autoplay loop onclick="window.openZoom('${n.image}', '${n.title}')"></video>` : `<img src="${n.image}" class="news-media cursor-pointer" onclick="window.openZoom('${n.image}', '${n.title}')">`) : ''}
+                    <h4 class="font-bold text-[11px] text-gray-950 uppercase mb-1">${n.title}</h4>
+                    <p class="text-[10px] text-gray-500 leading-tight">${n.content}</p>
+                    ${isAdmin ? `<button onclick="window.deleteNews('${n.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
+                </div>
+            `).join('');
         }
 
         function renderEvents() {
@@ -380,7 +344,7 @@
                         </div>
                         <div class="overflow-hidden">
                             <h4 class="font-bold text-[10px] text-gray-950 leading-tight truncate">${e.name}</h4>
-                            <p class="text-[8px] text-emerald-700 uppercase truncate">📍 ${e.location}</p>
+                            <p class="text-[8px] text-emerald-700 uppercase">📍 ${e.location}</p>
                         </div>
                         ${isAdmin ? `<button onclick="window.deleteEvent('${e.id}')" class="absolute top-1 right-1 text-gray-300 font-bold">&times;</button>` : ''}
                     </div>
@@ -388,6 +352,9 @@
             }).join('');
         }
 
+        const renderAll = () => { renderProducts(); renderNews(); renderEvents(); };
+
+        // --- Handlers Gestión ---
         window.adminDelete = async (id) => {
             const r = prompt("1. VENDIDO | 2. ELIMINAR | 3. CANCELAR");
             if (r === "1") {
@@ -398,10 +365,10 @@
         window.deleteNews = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "news", id)); };
         window.deleteEvent = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "events", id)); };
 
+        // --- Submit Formas ---
         document.getElementById('product-form').onsubmit = async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('image');
-            if(!fileInput.files[0]) return;
             const compressedBase64 = await compressImage(fileInput.files[0]);
             await addDoc(collection(db, "products"), {
                 title: document.getElementById('title').value,
@@ -437,8 +404,11 @@
             e.target.reset();
         };
 
-        document.getElementById('btn-logout').onclick = () => signOut(auth);
+        // --- Init ---
         document.getElementById('filter-category').onchange = renderProducts;
+        document.getElementById('btn-legal').onclick = () => document.getElementById('legal-modal').classList.remove('hidden');
+        document.getElementById('close-legal').onclick = () => document.getElementById('legal-modal').classList.add('hidden');
+        
         const cats = ["Tecnología", "Vehículos", "Hogar", "Ropa", "Servicios", "Otros"];
         document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
     </script>
